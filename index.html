@@ -174,8 +174,6 @@ button:not(:disabled):active{transform:scale(.95)}
 .row-meta{font-size:11.5px;color:var(--dim);margin-top:2px}
 .row.muted .amt{opacity:.55}
 .tag{display:inline-block;flex:none;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:7px;color:var(--buy);background:color-mix(in srgb,var(--buy) 15%,transparent)}
-.pay{display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:5px 10px;border-radius:10px;font-size:12px;font-weight:700;color:var(--in);background:color-mix(in srgb,var(--in) 14%,transparent);border:1px solid color-mix(in srgb,var(--in) 40%,transparent)}
-.pay .ic{width:12px;height:12px}
 .date-h{font-size:11.5px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;padding:16px 0 4px}
 .date-h:first-child{padding-top:10px}
 .anim{animation:listIn .45s cubic-bezier(.35,1.45,.55,1) both;animation-delay:calc(min(var(--i),12)*45ms)}
@@ -208,7 +206,6 @@ button:not(:disabled):active{transform:scale(.95)}
 .debt-desc{font-size:12.5px;color:var(--muted)}
 .debt-amt{font-weight:800;font-size:16px;white-space:nowrap}
 .debt-meta{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--dim)}
-.debt-meta .pay{margin:0 0 0 auto}
 .st{font-size:11px;font-weight:700;padding:4px 9px;border-radius:9px}
 .st.pendiente{color:var(--buy);background:color-mix(in srgb,var(--buy) 15%,transparent)}
 .st.pagada{color:var(--in);background:color-mix(in srgb,var(--in) 14%,transparent)}
@@ -377,7 +374,7 @@ textarea.input{resize:none;height:46px;padding:11px 12px}
 
   <div class="main">
     <header class="topbar">
-      <div><small id="today"></small><h1 id="greet"></h1></div>
+      <h1 id="greet"></h1>
       <button class="avatar" id="btn-settings" aria-label="Ajustes"></button>
     </header>
 
@@ -388,7 +385,6 @@ textarea.input{resize:none;height:46px;padding:11px 12px}
             <div class="hero-top"><span class="eyebrow">Saldo disponible</span><button class="pill" id="home-cur">Pesos</button></div>
             <p class="hero-amt num" id="h-balance">$ 0</p>
             <div class="hero-month">
-              <span class="eyebrow">Este mes</span>
               <span class="c-in"><i data-ic="in"></i><b class="num" id="h-in">$ 0</b></span>
               <span class="c-out"><i data-ic="out"></i><b class="num" id="h-out">$ 0</b></span>
             </div>
@@ -541,6 +537,7 @@ textarea.input{resize:none;height:46px;padding:11px 12px}
       <textarea class="input" id="mv-note" maxlength="120" rows="1" placeholder="Nota (opcional)" aria-label="Nota"></textarea>
     </div>
     <button type="submit" class="btn">Guardar</button>
+    <button type="button" class="btn-ghost" id="mv-paid">Marcar como pagado</button>
     <button type="button" class="btn-danger" id="mv-del">Eliminar movimiento</button>
   </form>
 </div></div>
@@ -1032,6 +1029,7 @@ function openMov(type, id=null){
   setAmount($('#mv-amount'), m?.amount, mv.currency);
   $('#mv-note').value = m?.note || '';
   $('#mv-del').hidden = !m;
+  $('#mv-paid').hidden = !m || m.status === 'externo' || isSettled(m);
   renderCats(); syncMov();
   openModal('m-mov');
 }
@@ -1075,6 +1073,7 @@ $('#mv-del').addEventListener('click', () => {
     catch(err){ console.error(err); toast('No se pudo eliminar.'); }
   });
 });
+$('#mv-paid').addEventListener('click', () => { closeModal('m-mov'); markPaid(mv.id); });
 async function markPaid(id){
   try{ await updateDoc(doc(db,'users',state.user.uid,'movements',id), { status:'pagado', paidDate:todayISO() }); toast('Marcado como pagado.'); }
   catch(err){ console.error(err); toast('No se pudo actualizar.'); }
@@ -1219,7 +1218,6 @@ function rowHTML(m, i, home=false){
     <div class="row-right">
       <p class="amt num${m.type === 'ingreso' ? ' pos' : ''}">${m.type === 'ingreso' ? '+' : '−'} ${money(m.amount, cur)}</p>
       <p class="row-meta">${methodLabel(m)}</p>
-      ${pending ? `<button type="button" class="pay" data-pay="${m.id}">${ic('check')}Pagado</button>` : ''}
     </div>
   </div>`;
 }
@@ -1235,8 +1233,6 @@ function rowsHTML(list, seen, headings){
 }
 function bindRows(root){
   root.onclick = e => {
-    const pay = e.target.closest('[data-pay]');
-    if(pay) return markPaid(pay.dataset.pay);
     const row = e.target.closest('[data-mv]');
     if(row) openMov(null, row.dataset.mv);
   };
@@ -1249,7 +1245,6 @@ function renderHeader(){
   const h = parseInt(new Intl.DateTimeFormat('en-US',{ timeZone:'America/Argentina/Buenos_Aires', hour:'numeric', hourCycle:'h23' }).format(new Date()), 10);
   const hi = h >= 6 && h < 12 ? '¡Buenos días' : h >= 12 && h < 19 ? '¡Buenas tardes' : '¡Buenas noches';
   const text = `${hi}, ${(state.user.displayName || 'vos').split(' ')[0]}!`;
-  $('#today').textContent = cap(new Intl.DateTimeFormat('es-AR',{ weekday:'long', day:'numeric', month:'long' }).format(new Date()));
   if(text === lastGreet) return;
   lastGreet = text;
   $('#greet').innerHTML = text.split(' ').map((w,i) => `<span class="bw" style="--i:${i}">${esc(w)}${i < text.split(' ').length-1 ? ' ' : ''}</span>`).join('');
@@ -1290,14 +1285,11 @@ function renderDeudas(){
       <div class="debt-meta">
         <span class="st ${d.status}">${d.status === 'pagada' ? 'Pagada' : 'Pendiente'}</span>
         <span>${shortDate(d.date)}</span>
-        ${d.status === 'pendiente' ? `<button type="button" class="pay" data-pay-debt="${d.id}">${ic('check')}${mine ? 'Cobrada' : 'Pagada'}</button>` : ''}
       </div>
     </div>`;
   }).join('');
 }
 $('#debt-list').addEventListener('click', e => {
-  const pay = e.target.closest('[data-pay-debt]');
-  if(pay) return markDebtPaid(pay.dataset.payDebt);
   const c = e.target.closest('[data-debt]');
   if(c) openDebt(c.dataset.debt);
 });
