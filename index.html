@@ -1043,7 +1043,7 @@
         <label>Estado</label>
         <button type="button" id="mv-pending-toggle" class="toggle-fixed">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-          <span id="mv-pending-label">Pendiente de pago</span>
+          <span id="mv-pending-label">Pagado con plata externa</span>
         </button>
       </div>
       <div class="field">
@@ -1276,19 +1276,16 @@ function amountPlain(digits, prefix){ return digits ? prefix+digits : ''; }
 function amountGrouped(digits, prefix){ return digits ? prefix+parseInt(digits,10).toLocaleString('es-AR') : ''; }
 function attachAmountMask(input, getPrefix){
   input.addEventListener('input', ()=>{
-    input.value = amountPlain(amountDigitsOnly(input.value), getPrefix());
-  });
-  input.addEventListener('focus', ()=>{
-    input.value = amountPlain(amountDigitsOnly(input.value), getPrefix());
-    requestAnimationFrame(()=>{ const p=input.value.length; input.setSelectionRange(p,p); });
-  });
-  input.addEventListener('blur', ()=>{
+    const caret = input.selectionStart ?? input.value.length;
+    const digitsBefore = amountDigitsOnly(input.value.slice(0, caret)).length;
     input.value = amountGrouped(amountDigitsOnly(input.value), getPrefix());
+    let pos = 0, seen = 0;
+    while(pos < input.value.length && seen < digitsBefore){ if(/\d/.test(input.value[pos])) seen++; pos++; }
+    input.setSelectionRange(pos, pos);
   });
 }
 function refreshAmountDisplay(input, getPrefix){
-  const digits = amountDigitsOnly(input.value);
-  input.value = (document.activeElement === input) ? amountPlain(digits, getPrefix()) : amountGrouped(digits, getPrefix());
+  input.value = amountGrouped(amountDigitsOnly(input.value), getPrefix());
 }
 function setAmountValue(input, amount, prefix){
   const digits = (amount || amount===0) ? String(Math.round(amount)) : '';
@@ -1723,7 +1720,7 @@ function syncMvMethodUI(){
   const hasDebit = isCredit && !!state.mvDebitDate;
   $('#mv-status-field').classList.toggle('hidden', state.mvType==='ingreso' || hasDebit);
   $('#mv-pending-toggle').classList.toggle('active', state.mvPending);
-  $('#mv-pending-label').textContent = state.mvPending ? 'Pendiente de pago (no se descuenta aún)' : 'Pendiente de pago';
+  $('#mv-pending-label').textContent = state.mvPending ? 'Pagado con plata externa (no cuenta en la app)' : 'Pagado con plata externa';
 }
 $$('#mv-method button').forEach(b=>{
   b.addEventListener('click', ()=>{
@@ -1799,7 +1796,7 @@ function openMovementModal(type, editId=null){
     state.mvMethod = mv.method || 'transferencia';
     state.mvCardType = mv.cardType || 'debito';
     state.mvDebitDate = mv.debitDate || null;
-    state.mvPending = mv.status==='pendiente' && !mv.debitDate;
+    state.mvPending = mv.status==='externo';
     setMvType(mv.type);
     state.mvCurrency = mv.currency || 'ARS';
     syncCurrencyPill('mv-currency', state.mvCurrency);
@@ -1848,7 +1845,8 @@ $('#form-movement').addEventListener('submit', async (e)=>{
   const isCard = state.mvMethod === 'tarjeta';
   const cardType = isCard ? state.mvCardType : null;
   const debitDate = (isCard && cardType==='credito' && state.mvDebitDate && state.mvDebitDate > dateVal) ? state.mvDebitDate : null;
-  const status = state.mvType==='ingreso' ? 'pagado' : ((debitDate || state.mvPending) ? 'pendiente' : 'pagado');
+  if(state.mvType==='ingreso' || debitDate) state.mvPending = false;
+  const status = state.mvType==='ingreso' ? 'pagado' : (state.mvPending ? 'externo' : (debitDate ? 'pendiente' : 'pagado'));
   const payload = {
     type: state.mvType,
     amount,
@@ -2104,6 +2102,7 @@ function computeGlobalBalances(cur){
   const curMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   state.movements.forEach(m=>{
     if((m.currency||'ARS') !== cur) return;
+    if(m.status === 'externo') return;
     if(!isSettled(m)){ pendingOut += m.amount; return; }
     const sign = m.type==='ingreso' ? 1 : -1;
     balance += sign*m.amount;
@@ -2132,15 +2131,16 @@ const PAY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 function movementRowHTML(m, animIdx=-1){
   const sign = m.type==='ingreso' ? '+' : '−';
   const cur = m.currency || 'ARS';
-  const pending = !isSettled(m);
+  const external = m.status === 'externo';
+  const pending = !external && !isSettled(m);
   const fixedBadge = m.fixed
     ? `<span class="fixed-badge" title="Fijo · ${PERIOD_LABELS[m.period] || ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>`
     : '';
-  const pendingBadge = pending ? '<span class="pending-badge">Pendiente</span>' : '';
+  const pendingBadge = pending ? '<span class="pending-badge">Pendiente</span>' : (external ? '<span class="pending-badge">Externo</span>' : '');
   const sub = pending && m.debitDate ? ('Se debita el '+shortDate(m.debitDate)) : (m.note ? esc(m.note) : shortDate(m.date));
   const payBtn = pending ? `<button type="button" class="pay-btn" data-pay-mv="${m.id}">${PAY_ICON}Pagado</button>` : '';
   const anim = animIdx >= 0 ? ` anim-item" style="--i:${animIdx}` : '';
-  return `<div class="movement-row${pending?' is-pending':''}${anim}" data-mv-id="${m.id}">
+  return `<div class="movement-row${pending||external?' is-pending':''}${anim}" data-mv-id="${m.id}">
     <div class="mv-icon ${m.type}">${TYPE_ICONS[m.type]}</div>
     <div class="mv-info">
       <p class="mv-cat">${esc(m.category)}${fixedBadge}${pendingBadge}</p>
@@ -2336,7 +2336,7 @@ function renderResumen(){
   const cur = state.resumenCurrency;
   syncCurrencyPill('resumen-currency', cur);
   const inRange = state.movements.filter(m=>{
-    if((m.currency||'ARS') !== cur || !isSettled(m)) return false;
+    if((m.currency||'ARS') !== cur || m.status === 'externo' || !isSettled(m)) return false;
     if(!start) return true;
     return m.date >= start && m.date <= end;
   });
