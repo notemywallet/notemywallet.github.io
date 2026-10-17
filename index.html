@@ -220,8 +220,11 @@
     cursor:pointer;
     z-index:41;
   }
-  .fab svg{ width:22px;height:22px; }
-  .fab:active{ transform:scale(0.92); }
+  .fab svg{ width:22px;height:22px;transition:transform .25s cubic-bezier(.3,1.4,.5,1); }
+  .fab:active{ transform:scale(0.88); }
+  .fab:active svg{ transform:rotate(90deg); }
+  .fab{ animation:fabIn .45s cubic-bezier(.3,1.4,.5,1) backwards; transition:transform .15s ease, box-shadow .15s ease; }
+  @keyframes fabIn{ from{ transform:scale(0) rotate(-90deg); opacity:0; } to{ transform:scale(1) rotate(0); opacity:1; } }
 
   /* ---------- CARDS / HOME ---------- */
   .hero-card{
@@ -240,6 +243,12 @@
   .hero-sub-item.expense{ color:var(--expense); }
 
   .stats-grid{ display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px; }
+  .stats-grid.methods{ grid-template-columns:repeat(3,1fr); }
+  .stats-grid.methods .stat-value{ font-size:15px; }
+  .stats-grid.methods .stat-top{ font-size:12px; }
+  .hero-top{ display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
+  .hero-top .hero-label{ margin:0; }
+  .resumen-currency-row{ display:flex;justify-content:flex-end;margin-bottom:10px; }
   .stat-card{
     flex:1;
     background:var(--surface);
@@ -251,19 +260,11 @@
   .stat-card .stat-top svg{ width:14px;height:14px; }
   .stat-card .stat-value{ font-size:18px;font-weight:800;font-variant-numeric:tabular-nums; }
 
-  .quick-actions{ display:flex;justify-content:space-between;gap:8px;margin:18px 0 22px; }
-  .qa-btn{
-    flex:1;
-    display:flex;flex-direction:column;align-items:center;gap:8px;
-    background:none;border:none;color:var(--text);cursor:pointer;
-    padding:4px 0;
-  }
   .qa-icon{
     width:48px;height:48px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
   }
   .qa-icon svg{ width:20px;height:20px; }
-  .qa-btn span{ font-size:11.5px;font-weight:600;color:var(--text-dim); }
   .qa-icon.ingreso{ background:var(--income-dim);color:var(--income); }
   .qa-icon.gasto{ background:var(--expense-dim);color:var(--expense); }
   .qa-icon.compra{ background:var(--purchase-dim);color:var(--purchase); }
@@ -422,7 +423,7 @@
     padding:14px 20px calc(24px + env(safe-area-inset-bottom));
     max-height:88vh;overflow-y:auto;
     transform:translateY(100%);
-    transition:transform .25s cubic-bezier(.32,.72,0,1);
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.05);
   }
   .modal-overlay.open .sheet{ transform:translateY(0); }
   .sheet-handle{ width:36px;height:4px;background:var(--border);border-radius:3px;margin:0 auto 14px; }
@@ -449,12 +450,11 @@
   .amount-field input:focus{ outline:none; }
   .amount-field{ text-align:center;margin-bottom:18px; }
   .amount-field label{ display:block;font-size:12.5px;font-weight:700;color:var(--text-dim);margin-bottom:7px;text-align:center; }
-  .currency-toggle{ display:flex;justify-content:center;gap:8px;margin-top:4px; }
-  .currency-toggle button{
-    padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:var(--surface-2);
-    color:var(--text-dim);font-size:12.5px;font-weight:700;cursor:pointer;
+  .currency-toggle{ display:flex;justify-content:center;margin-top:4px; }
+  .currency-pill{
+    padding:6px 16px;border-radius:16px;border:1px solid var(--accent);background:var(--accent-dim);
+    color:var(--accent);font-size:12.5px;font-weight:700;cursor:pointer;
   }
-  .currency-toggle button.active{ background:var(--accent-dim);color:var(--accent);border-color:var(--accent); }
 
   input[type=number]::-webkit-outer-spin-button,
   input[type=number]::-webkit-inner-spin-button{
@@ -471,6 +471,17 @@
     color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;
   }
   .chip-select button.active{ background:var(--accent);color:#fff;border-color:var(--accent); }
+  .chip-select button.chip-add{ border-style:dashed;display:inline-flex;align-items:center;gap:5px; }
+  .chip-select button.chip-add svg{ width:13px;height:13px; }
+  .chip-select .chip-x{ display:inline-flex;align-items:center;margin-left:6px;opacity:.75; }
+  .chip-select .chip-x svg{ width:12px;height:12px; }
+  .chip-select .cat-edit-input{
+    padding:8px 12px;border-radius:18px;border:1px solid var(--accent);background:var(--surface-2);
+    color:var(--text);font-size:13px;font-weight:600;width:130px;
+  }
+  .cat-edit-toggle{ background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:700;cursor:pointer;padding:0; }
+  .field-head{ display:flex;align-items:center;justify-content:space-between;margin-bottom:7px; }
+  .field-head label{ margin:0; }
 
   .method-toggle{ display:flex;gap:10px; }
   .method-toggle button{
@@ -480,6 +491,11 @@
   }
   .method-toggle button svg{ width:17px;height:17px; }
   .method-toggle button.active{ background:var(--accent-dim);color:var(--accent);border-color:var(--accent); }
+  .method-toggle.small button{ padding:10px 8px;font-size:13px; }
+  .method-toggle.three button{ flex-direction:column;gap:5px;padding:12px 4px;font-size:12.5px; }
+  .collapsible{ overflow:hidden;max-height:0;opacity:0;transition:max-height .3s ease, opacity .25s ease, margin .25s ease; }
+  .collapsible.open{ max-height:420px;opacity:1;margin-top:10px; }
+  .debit-date-note{ font-size:12px;color:var(--text-faint);margin:0 2px 6px;line-height:1.5; }
 
   .toggle-fixed{
     display:flex;align-items:center;gap:10px;width:100%;
@@ -489,14 +505,15 @@
   .toggle-fixed svg{ width:17px;height:17px;flex-shrink:0; }
   .toggle-fixed.active{ background:var(--accent-dim);color:var(--accent);border-color:var(--accent); }
   .toggle-fixed.locked{ opacity:0.75;cursor:default; }
-  .mv-period-row{ margin-top:10px; }
+  .mv-period-row{ margin-top:0; }
+  .toggle-fixed .tf-state{ margin-left:auto;font-size:12.5px;font-weight:700; }
   .fixed-lock-note{ font-size:12px;color:var(--text-faint);margin:8px 2px 0;line-height:1.5; }
 
   .btn-primary{
     width:100%;padding:15px;border-radius:var(--radius-s);border:none;
     background:var(--accent);color:#fff;font-size:15.5px;font-weight:700;cursor:pointer;margin-top:6px;
   }
-  .btn-primary:active{ transform:scale(0.98); }
+  .btn-primary:active{ transform:scale(0.97); }
   .btn-danger-ghost{
     width:100%;padding:14px;border-radius:var(--radius-s);border:1px solid var(--expense);
     background:none;color:var(--expense);font-size:14.5px;font-weight:700;cursor:pointer;margin-top:10px;
@@ -505,15 +522,6 @@
     width:100%;padding:14px;border-radius:var(--radius-s);border:1px solid var(--border);
     background:none;color:var(--text);font-size:14.5px;font-weight:700;cursor:pointer;margin-top:10px;
   }
-
-  .type-tabs{ display:flex;gap:8px;margin-bottom:18px; }
-  .type-tabs button{
-    flex:1;padding:11px 4px;border-radius:var(--radius-s);border:1px solid var(--border);
-    background:var(--surface-2);color:var(--text-dim);font-size:13.5px;font-weight:700;cursor:pointer;
-  }
-  .type-tabs button.active.t-ingreso{ background:var(--income-dim);color:var(--income);border-color:var(--income); }
-  .type-tabs button.active.t-gasto{ background:var(--expense-dim);color:var(--expense);border-color:var(--expense); }
-  .type-tabs button.active.t-compra{ background:var(--purchase-dim);color:var(--purchase);border-color:var(--purchase); }
 
   .action-sheet-grid{ display:grid;grid-template-columns:1fr 1fr;gap:10px; }
   .action-sheet-grid button{
@@ -585,9 +593,8 @@
     #app-shell{ max-width:640px; }
     .bottom-nav{ max-width:640px; }
     main#views{ padding-left:28px; padding-right:28px; }
-    .stats-grid{ grid-template-columns:repeat(4,1fr); }
+    .stats-grid.methods .stat-value{ font-size:18px; }
     .hero-card{ padding:28px 32px; }
-    .quick-actions{ max-width:440px; margin-left:auto; margin-right:auto; }
   }
 
   /* Tablet grande */
@@ -668,6 +675,83 @@
     .sheet{ max-width:440px; border-radius:24px; max-height:85vh; }
   }
 
+  /* ---------- ANIMACIONES DE BOTONES ---------- */
+  button{ -webkit-tap-highlight-color:transparent; }
+  button, .switch, .movement-row, .stat-card{
+    transition:transform .16s cubic-bezier(.3,1.3,.5,1), background-color .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease;
+  }
+  button:not(:disabled):active, .switch:active, .movement-row:active{ transform:scale(0.94); }
+  .movement-row:active{ transform:scale(0.985); }
+  .btn-primary:active, .btn-danger-ghost:active, .btn-secondary-ghost:active{ transform:scale(0.97); }
+  button.fab:active{ transform:scale(0.86); }
+  @media (hover:hover){
+    .chip:hover, .chip-select button:hover, .method-toggle button:hover, .toggle-fixed:hover, .action-sheet-grid button:hover{ border-color:var(--accent); }
+    .btn-primary:hover{ filter:brightness(1.08); }
+    button.fab:hover{ transform:translateY(-2px) scale(1.05); box-shadow:0 12px 26px rgba(108,107,245,0.55); }
+  }
+  .nav-btn.active svg{ animation:navPop .35s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes navPop{ 0%{transform:scale(.7);} 100%{transform:scale(1);} }
+  .chip.active, .chip-select button.active, .method-toggle button.active{ animation:selPop .25s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes selPop{ 0%{transform:scale(.93);} 100%{transform:scale(1);} }
+
+  /* ---------- LISTA ANIMADA (estilo Animated List) ---------- */
+  .anim-item{
+    animation:listFormIn 1s cubic-bezier(.2,.9,.3,1) backwards;
+    animation-delay:calc(var(--i, 0) * 70ms);
+    transform-origin:50% 0;
+  }
+  @keyframes listFormIn{
+    0%{ opacity:0; transform:translateY(calc(-1 * (var(--i,0) * 20px + 14px))) scale(calc(1 - var(--i,0) * 0.05)); }
+    60%{ opacity:1; }
+    100%{ opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  /* ---------- PAGO / CANCELAR ---------- */
+  .pay-btn{
+    flex-shrink:0;border:1px solid var(--income);background:var(--income-dim);color:var(--income);
+    font-size:12px;font-weight:700;padding:6px 10px;border-radius:10px;cursor:pointer;margin-top:4px;
+  }
+  .pending-badge{ display:inline-block;font-size:10.5px;font-weight:700;color:var(--purchase);background:var(--purchase-dim);padding:2px 7px;border-radius:8px;margin-left:6px;vertical-align:middle; }
+  .movement-row.is-pending .mv-amount{ opacity:.6; }
+
+  .debt-meta .pay-btn{ margin:0 0 0 auto; }
+
+  /* ---------- SETTINGS DESPLEGABLE ---------- */
+  .acc-head{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    background:none;border:none;color:var(--text);font-size:14.5px;font-weight:700;padding:14px 2px;cursor:pointer;
+    border-top:1px solid var(--border);margin-top:10px;
+  }
+  .acc-head svg{ width:16px;height:16px;color:var(--text-dim);transition:transform .25s ease; }
+  .acc-head.open svg{ transform:rotate(180deg); }
+  .acc-body{ overflow:hidden;max-height:0;transition:max-height .3s ease; }
+  .acc-body.open{ max-height:600px;overflow-y:auto; }
+
+  /* ---------- DATE PICKER PROPIO ---------- */
+  .date-btn{
+    width:100%;display:flex;align-items:center;gap:10px;text-align:left;
+    padding:13px 14px;border-radius:var(--radius-s);border:1px solid var(--border);
+    background:var(--surface-2);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;
+  }
+  .date-btn svg{ width:17px;height:17px;color:var(--text-dim);flex-shrink:0; }
+  .dp-head{ display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
+  .dp-head button{
+    width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);
+    color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .dp-head button svg{ width:16px;height:16px; }
+  .dp-title{ font-size:15px;font-weight:800;text-transform:capitalize; }
+  .dp-grid{ display:grid;grid-template-columns:repeat(7,1fr);gap:4px; }
+  .dp-dow{ text-align:center;font-size:11px;font-weight:700;color:var(--text-faint);padding:6px 0; }
+  .dp-day{
+    aspect-ratio:1;border-radius:50%;border:none;background:none;color:var(--text);
+    font-size:13.5px;font-weight:600;cursor:pointer;
+  }
+  .dp-day.other{ visibility:hidden; }
+  .dp-day.today{ border:1px solid var(--accent); }
+  .dp-day.sel{ background:var(--accent);color:#fff; }
+  .dp-today-btn{ margin-top:12px; }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
   }
@@ -688,7 +772,6 @@
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 5.1 29.6 3 24 3 16.3 3 9.7 7.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 45c5.5 0 10.4-1.9 14-5.1l-6.6-5.4C29.4 36.3 26.9 37 24 37c-5.3 0-9.7-3.4-11.3-8l-6.6 5.1C9.6 40.5 16.2 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4 5.5l6.6 5.4C41.9 35.6 45 30.4 45 24c0-1.2-.1-2.4-.4-3.5z"/></svg>
       Continuar con Google
     </button>
-    <p class="login-note">Tus datos se guardan de forma privada en tu propia base de Firebase.</p>
   </div>
 
   <!-- ================= MAIN APP ================= -->
@@ -710,7 +793,10 @@
       <!-- ---- HOME ---- -->
       <section class="view active" id="view-home">
         <div class="hero-card">
-          <p class="hero-label">Saldo total</p>
+          <div class="hero-top">
+            <p class="hero-label">Saldo total</p>
+            <button type="button" class="currency-pill" id="home-currency">Pesos</button>
+          </div>
           <p class="hero-amount" id="home-balance">$0</p>
           <div class="hero-sub">
             <div class="hero-sub-item income">
@@ -724,7 +810,7 @@
           </div>
         </div>
 
-        <div class="stats-grid">
+        <div class="stats-grid methods">
           <div class="stat-card">
             <div class="stat-top">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
@@ -735,10 +821,19 @@
           <div class="stat-card">
             <div class="stat-top">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 21 7 17 11M21 7H9M7 13 3 17 7 21M3 17H15"/></svg>
-              Transferencia
+              Transf.
             </div>
             <div class="stat-value" id="home-transfer">$0</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+              Tarjeta
+            </div>
+            <div class="stat-value" id="home-card">$0</div>
+          </div>
+        </div>
+        <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-top">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>
@@ -753,25 +848,6 @@
             </div>
             <div class="stat-value" id="home-i-owe" style="color:var(--expense)">$0</div>
           </div>
-        </div>
-
-        <div class="quick-actions">
-          <button class="qa-btn" data-quick="ingreso">
-            <div class="qa-icon ingreso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-            <span>Ingreso</span>
-          </button>
-          <button class="qa-btn" data-quick="gasto">
-            <div class="qa-icon gasto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17M16 17H7V8"/></svg></div>
-            <span>Gasto</span>
-          </button>
-          <button class="qa-btn" data-quick="compra">
-            <div class="qa-icon compra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div>
-            <span>Compra</span>
-          </button>
-          <button class="qa-btn" data-quick="deuda">
-            <div class="qa-icon deuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/></svg></div>
-            <span>Deuda</span>
-          </button>
         </div>
 
         <div class="section-head">
@@ -791,6 +867,7 @@
         <div class="chip-row" id="mov-filter-method">
           <button class="chip" data-filter-method="efectivo">Efectivo</button>
           <button class="chip" data-filter-method="transferencia">Transferencia</button>
+          <button class="chip" data-filter-method="tarjeta">Tarjeta</button>
         </div>
         <div id="movimientos-list"></div>
       </section>
@@ -813,6 +890,7 @@
 
       <!-- ---- RESUMEN ---- -->
       <section class="view" id="view-resumen">
+        <div class="resumen-currency-row"><button type="button" class="currency-pill" id="resumen-currency">Pesos</button></div>
         <div class="tab-strip" id="resumen-period-tabs">
           <button class="active" data-period="mensual">Mensual</button>
           <button data-period="trimestral">Trimestral</button>
@@ -847,6 +925,11 @@
             <div class="method-summary-line income"><span>Ingresos</span><span id="res-transfer-income-amt">$0</span></div>
             <div class="method-summary-line expense"><span>Gastos</span><span id="res-transfer-expense-amt">$0</span></div>
           </div>
+          <div class="method-summary-card">
+            <p class="method-summary-title">Tarjeta</p>
+            <div class="method-summary-line income"><span>Ingresos</span><span id="res-card-income-amt">$0</span></div>
+            <div class="method-summary-line expense"><span>Gastos</span><span id="res-card-expense-amt">$0</span></div>
+          </div>
         </div>
 
         <div class="section-head"><h2>Gastos y compras por categoría</h2></div>
@@ -855,7 +938,7 @@
 
     </main>
 
-    <button class="fab hidden" id="btn-fab">
+    <button class="fab" id="btn-fab" aria-label="Agregar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
 
@@ -906,52 +989,68 @@
     <div class="sheet-handle"></div>
     <div class="sheet-head"><h3 id="mv-modal-title">Nuevo movimiento</h3><button class="icon-btn" data-close="modal-movement"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <form id="form-movement">
-      <div class="type-tabs" id="mv-type-tabs">
-        <button type="button" class="t-ingreso" data-mv-type="ingreso">Ingreso</button>
-        <button type="button" class="t-gasto" data-mv-type="gasto">Gasto</button>
-        <button type="button" class="t-compra" data-mv-type="compra">Compra</button>
-      </div>
       <div class="amount-field">
         <label>Monto</label>
-        <input type="text" inputmode="numeric" id="mv-amount" placeholder="$0" required>
-        <div class="currency-toggle" id="mv-currency">
-          <button type="button" class="active" data-currency="ARS">$ Pesos</button>
-          <button type="button" data-currency="USD">US$ Dólares</button>
-        </div>
+        <input type="text" inputmode="numeric" id="mv-amount" required>
+        <div class="currency-toggle"><button type="button" class="currency-pill" id="mv-currency">Pesos</button></div>
       </div>
       <div class="field">
-        <label>Categoría</label>
+        <div class="field-head"><label>Categoría</label><button type="button" class="cat-edit-toggle" id="mv-cat-edit">Editar</button></div>
         <div class="chip-select" id="mv-categories"></div>
       </div>
       <div class="field">
         <label>Método de pago</label>
-        <div class="method-toggle" id="mv-method">
+        <div class="method-toggle three" id="mv-method">
           <button type="button" data-method="efectivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>Efectivo</button>
           <button type="button" data-method="transferencia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3 21 7 17 11M21 7H9M7 13 3 17 7 21M3 17H15"/></svg>Transferencia</button>
+          <button type="button" data-method="tarjeta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Tarjeta</button>
+        </div>
+        <div class="collapsible" id="mv-card-box">
+          <div class="method-toggle small" id="mv-cardtype">
+            <button type="button" data-cardtype="debito">Débito</button>
+            <button type="button" data-cardtype="credito">Crédito</button>
+          </div>
+          <div class="collapsible" id="mv-debit-box">
+            <p class="debit-date-note">Con crédito podés elegir otra fecha para debitarlo. Hasta ese día queda pendiente y no se descuenta del saldo.</p>
+            <button type="button" class="date-btn" id="mv-debit-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="mv-debit-label">Debitar el mismo día</span></button>
+            <button type="button" class="cat-edit-toggle hidden" id="mv-debit-clear" style="margin-top:8px;">Quitar fecha de débito</button>
+          </div>
         </div>
       </div>
       <div class="field">
         <label>Fecha</label>
-        <input type="date" id="mv-date" required>
+        <button type="button" class="date-btn" id="mv-date-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="mv-date-label"></span></button>
+        <input type="hidden" id="mv-date">
+      </div>
+      <div class="field hidden" id="mv-status-field">
+        <label>Estado</label>
+        <button type="button" id="mv-pending-toggle" class="toggle-fixed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span id="mv-pending-label">Pendiente de pago</span>
+        </button>
       </div>
       <div class="field">
         <label>Repetición</label>
         <button type="button" id="mv-fixed-toggle" class="toggle-fixed">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
           <span id="mv-fixed-toggle-label">Gasto fijo</span>
+          <span class="tf-state hidden" id="mv-fixed-state">Mensual</span>
         </button>
-        <div class="chip-row mv-period-row hidden" id="mv-period-row">
-          <button type="button" class="chip" data-period="semana">Semanal</button>
-          <button type="button" class="chip active" data-period="mes">Mensual</button>
-          <button type="button" class="chip" data-period="bimestre">Bimestral</button>
-          <button type="button" class="chip" data-period="trimestre">Trimestral</button>
-          <button type="button" class="chip" data-period="anual">Anual</button>
+        <div class="collapsible" id="mv-period-box">
+          <div class="chip-row mv-period-row" id="mv-period-row">
+            <button type="button" class="chip" data-period="semana">Semanal</button>
+            <button type="button" class="chip active" data-period="mes">Mensual</button>
+            <button type="button" class="chip" data-period="bimestre">Bimestral</button>
+            <button type="button" class="chip" data-period="trimestre">Trimestral</button>
+            <button type="button" class="chip" data-period="anual">Anual</button>
+            <button type="button" class="chip" data-period="none">No repetir</button>
+          </div>
         </div>
         <p class="fixed-lock-note hidden" id="mv-fixed-lock-note">Se genera solo, cada período, desde una repetición activa. Para cambiarla o cancelarla, andá a Ajustes.</p>
       </div>
       <div class="field">
         <label>Nota (opcional)</label>
-        <textarea id="mv-note" placeholder="Detalle, lugar, motivo..." maxlength="120"></textarea>
+        <textarea id="mv-note" placeholder="Detalle, lugar, motivo..." maxlength="120" autocomplete="off"></textarea>
       </div>
       <button type="submit" class="btn-primary">Guardar</button>
       <button type="button" class="btn-danger-ghost hidden" id="mv-delete-btn">Eliminar movimiento</button>
@@ -971,11 +1070,8 @@
       </div>
       <div class="amount-field">
         <label>Monto</label>
-        <input type="text" inputmode="numeric" id="debt-amount" placeholder="$0" required>
-        <div class="currency-toggle" id="debt-currency">
-          <button type="button" class="active" data-currency="ARS">$ Pesos</button>
-          <button type="button" data-currency="USD">US$ Dólares</button>
-        </div>
+        <input type="text" inputmode="numeric" id="debt-amount" required>
+        <div class="currency-toggle"><button type="button" class="currency-pill" id="debt-currency">Pesos</button></div>
       </div>
       <div class="field">
         <label>Persona</label>
@@ -987,7 +1083,8 @@
       </div>
       <div class="field">
         <label>Fecha</label>
-        <input type="date" id="debt-date" required>
+        <button type="button" class="date-btn" id="debt-date-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span id="debt-date-label"></span></button>
+        <input type="hidden" id="debt-date">
       </div>
 
       <div id="debt-status-block" class="hidden">
@@ -1022,9 +1119,27 @@
     <div class="settings-row">
       <span class="lbl" id="settings-user-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>Cuenta</span>
     </div>
-    <p class="settings-section-title">Gastos e ingresos fijos activos</p>
-    <div id="settings-recurring-list"></div>
+    <button type="button" class="acc-head" id="acc-recurring-head">
+      <span id="acc-recurring-title">Gastos e ingresos fijos</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="acc-body" id="acc-recurring-body"><div id="settings-recurring-list"></div></div>
     <button class="btn-danger-ghost" id="btn-signout">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ================= MODAL: DATE PICKER ================= -->
+<div class="modal-overlay" id="modal-datepicker">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head"><h3>Elegí una fecha</h3><button class="icon-btn" data-close="modal-datepicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="dp-head">
+      <button type="button" id="dp-prev" aria-label="Mes anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <span class="dp-title" id="dp-title"></span>
+      <button type="button" id="dp-next" aria-label="Mes siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+    <div class="dp-grid" id="dp-grid"></div>
+    <button type="button" class="btn-secondary-ghost dp-today-btn" id="dp-today">Hoy</button>
   </div>
 </div>
 
@@ -1053,7 +1168,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import {
   getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, serverTimestamp, runTransaction
+  onSnapshot, query, serverTimestamp, runTransaction, setDoc
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1133,6 +1248,7 @@ function shortDate(iso){
   return new Intl.DateTimeFormat('es-AR',{ day:'numeric', month:'short', year:'numeric' }).format(isoToDate(iso));
 }
 function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function esc(v){ return String(v==null?'':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ---- Máscara de monto: mientras se escribe muestra "$" + dígitos planos;
    al salir del campo agrega los puntos de miles; al volver a entrar,
@@ -1184,7 +1300,7 @@ $$('[data-close]').forEach(btn=>{
 });
 
 /* ======================= CATEGORIES ======================= */
-const CATEGORIES = {
+const DEFAULT_CATEGORIES = {
   ingreso: ['Sueldo','Freelance','Venta','Regalo','Otros'],
   gasto: ['Comida','Transporte','Vivienda','Servicios','Otros'],
   compra: ['Tecnología','Hogar','Ropa','Regalo','Otros']
@@ -1194,6 +1310,7 @@ const TYPE_ICONS = {
   gasto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17M16 17H7V8"/></svg>',
   compra: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>'
 };
+const TYPE_NAMES = { ingreso:'ingreso', gasto:'gasto', compra:'compra' };
 const FIXED_TOGGLE_LABELS = { ingreso:'Ingreso fijo', gasto:'Gasto fijo', compra:'Compra recurrente' };
 const PERIOD_LABELS = { semana:'Semanal', mes:'Mensual', bimestre:'Bimestral', trimestre:'Trimestral', anual:'Anual' };
 
@@ -1209,7 +1326,15 @@ const state = {
   movFilterCurrency: 'todos',
   deudasTab: 'me_deben',
   mvType: 'gasto',
-  mvMethod: 'efectivo',
+  mvMethod: 'transferencia',
+  mvCardType: 'debito',
+  mvDebitDate: null,
+  mvPending: false,
+  mvPeriodOpen: false,
+  catEditing: false,
+  categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+  homeCurrency: 'ARS',
+  seen: { home:new Set(), movimientos:new Set(), deudas:new Set() },
   mvCurrency: 'ARS',
   mvCategory: null,
   mvFixed: false,
@@ -1227,6 +1352,7 @@ const state = {
 let unsubMovements = null;
 let unsubDebts = null;
 let unsubRecurring = null;
+let unsubCategories = null;
 let recurringChecked = false;
 
 /* ======================= THEME ======================= */
@@ -1293,12 +1419,15 @@ onAuthStateChanged(auth, (user)=>{
     listenMovements(user.uid);
     listenDebts(user.uid);
     listenRecurring(user.uid);
+    listenCategories(user.uid);
   } else {
     $('#login-screen').classList.remove('hidden');
     $('#main-app').classList.add('hidden');
     if(unsubMovements) unsubMovements();
     if(unsubDebts) unsubDebts();
     if(unsubRecurring) unsubRecurring();
+    if(unsubCategories) unsubCategories();
+    state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
     state.movements = [];
     state.debts = [];
     state.recurring = [];
@@ -1333,6 +1462,25 @@ function listenRecurring(uid){
       processAllRecurringDue();
     }
   }, (err)=>{ console.error(err); });
+}
+
+function listenCategories(uid){
+  unsubCategories = onSnapshot(doc(db,'users',uid,'settings','categories'), (snap)=>{
+    const base = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+    if(snap.exists()){
+      const d = snap.data();
+      ['ingreso','gasto','compra'].forEach(t=>{
+        if(Array.isArray(d[t]) && d[t].length) base[t] = d[t].filter(x=> typeof x==='string');
+      });
+    }
+    state.categories = base;
+    if($('#modal-movement').classList.contains('open')) renderMovCategoryChips();
+  }, (err)=>{ console.error(err); });
+}
+async function saveCategories(){
+  try{
+    await setDoc(doc(db,'users',state.user.uid,'settings','categories'), state.categories);
+  }catch(err){ console.error(err); showToast('No se pudieron guardar las categorías.'); }
 }
 
 /* ======================= RECURRING: generación automática =======================
@@ -1378,7 +1526,7 @@ async function processOneRecurring(recId){
   for(const d of toCreate){
     try{
       await addDoc(collection(db,'users',uid,'movements'), {
-        type: base.type, amount: base.amount, method: base.method, currency: base.currency || 'ARS',
+        type: base.type, amount: base.amount, method: base.method, cardType: base.cardType || null, status: 'pagado', currency: base.currency || 'ARS',
         category: base.category, note: base.note || '',
         date: d, fixed: true, period: base.period, recurringId: recId,
         createdAt: serverTimestamp()
@@ -1393,7 +1541,7 @@ function switchView(view){
   $$('.view').forEach(v=> v.classList.remove('active'));
   $('#view-'+view).classList.add('active');
   $$('.nav-btn').forEach(b=> b.classList.toggle('active', b.dataset.nav === view));
-  $('#btn-fab').classList.toggle('hidden', view === 'home');
+  state.seen[view] = new Set();
   renderAll();
 }
 $$('[data-nav]').forEach(btn=>{
@@ -1411,50 +1559,192 @@ $$('[data-quick]').forEach(btn=>{
 });
 $('#btn-fab').addEventListener('click', ()=> openModal('modal-quickadd'));
 $('#btn-open-settings').addEventListener('click', ()=> openModal('modal-settings'));
+$('#acc-recurring-head').addEventListener('click', ()=>{
+  $('#acc-recurring-head').classList.toggle('open');
+  $('#acc-recurring-body').classList.toggle('open');
+});
+
+/* ======================= DATE PICKER PROPIO ======================= */
+const dp = { cb:null, sel:null, year:0, month:0 };
+function openDatePicker(iso, cb){
+  dp.cb = cb; dp.sel = iso;
+  const d = isoToDate(iso || todayISO());
+  dp.year = d.getFullYear(); dp.month = d.getMonth();
+  renderDP();
+  openModal('modal-datepicker');
+}
+function renderDP(){
+  $('#dp-title').textContent = new Intl.DateTimeFormat('es-AR',{ month:'long', year:'numeric' }).format(new Date(dp.year, dp.month, 1));
+  const first = (new Date(dp.year, dp.month, 1).getDay() + 6) % 7;
+  const days = new Date(dp.year, dp.month+1, 0).getDate();
+  const today = todayISO();
+  let html = ['L','M','M','J','V','S','D'].map(x=> `<div class="dp-dow">${x}</div>`).join('');
+  for(let i=0;i<first;i++) html += '<button type="button" class="dp-day other" tabindex="-1"></button>';
+  for(let d=1; d<=days; d++){
+    const iso = dp.year+'-'+String(dp.month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    html += `<button type="button" class="dp-day${iso===today?' today':''}${iso===dp.sel?' sel':''}" data-iso="${iso}">${d}</button>`;
+  }
+  const grid = $('#dp-grid');
+  grid.innerHTML = html;
+  $$('.dp-day[data-iso]', grid).forEach(b=>{
+    b.addEventListener('click', ()=> pickDate(b.dataset.iso));
+  });
+}
+function pickDate(iso){
+  closeModal('modal-datepicker');
+  if(dp.cb) dp.cb(iso);
+}
+function shiftDP(dir){
+  const d = new Date(dp.year, dp.month+dir, 1);
+  dp.year = d.getFullYear(); dp.month = d.getMonth();
+  renderDP();
+}
+$('#dp-prev').addEventListener('click', ()=> shiftDP(-1));
+$('#dp-next').addEventListener('click', ()=> shiftDP(1));
+$('#dp-today').addEventListener('click', ()=> pickDate(todayISO()));
+
+function setDateField(hiddenId, labelId, iso){
+  $('#'+hiddenId).value = iso;
+  $('#'+labelId).textContent = relativeDateLabel(iso);
+}
+$('#mv-date-btn').addEventListener('click', ()=>{
+  openDatePicker($('#mv-date').value, iso=> setDateField('mv-date','mv-date-label',iso));
+});
+$('#debt-date-btn').addEventListener('click', ()=>{
+  openDatePicker($('#debt-date').value, iso=> setDateField('debt-date','debt-date-label',iso));
+});
 
 /* ======================= MOVEMENT MODAL ======================= */
+function catsFor(type){
+  const c = state.categories[type];
+  return (c && c.length) ? c : DEFAULT_CATEGORIES[type];
+}
+const X_ICON = '<span class="chip-x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>';
+const PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+
 function renderMovCategoryChips(){
   const wrap = $('#mv-categories');
-  const cats = CATEGORIES[state.mvType];
-  if(!state.mvCategory || !cats.includes(state.mvCategory)) state.mvCategory = cats[0];
-  wrap.innerHTML = cats.map(c=>
-    `<button type="button" data-cat="${c}" class="${c===state.mvCategory?'active':''}">${c}</button>`
-  ).join('');
+  const cats = catsFor(state.mvType);
+  if(!state.mvCategory) state.mvCategory = cats[0];
+  const list = (state.catEditing || cats.includes(state.mvCategory)) ? cats : [state.mvCategory, ...cats];
+  wrap.innerHTML = list.map(c=>
+    `<button type="button" data-cat="${esc(c)}" class="${(!state.catEditing && c===state.mvCategory)?'active':''}">${esc(c)}${state.catEditing ? X_ICON : ''}</button>`
+  ).join('') + `<button type="button" class="chip-add" id="mv-cat-add">${PLUS_ICON}Nueva</button>`;
+  $('#mv-cat-edit').textContent = state.catEditing ? 'Listo' : 'Editar';
   $$('#mv-categories [data-cat]').forEach(b=>{
     b.addEventListener('click', ()=>{
-      state.mvCategory = b.dataset.cat;
+      const name = b.dataset.cat;
+      if(state.catEditing){ removeCategory(name); return; }
+      state.mvCategory = name;
       $$('#mv-categories [data-cat]').forEach(x=> x.classList.toggle('active', x===b));
     });
   });
+  $('#mv-cat-add').addEventListener('click', startAddCategory);
 }
+function removeCategory(name){
+  const cats = catsFor(state.mvType);
+  if(cats.length <= 1){ showToast('Tiene que quedar al menos una categoría.'); return; }
+  state.categories[state.mvType] = cats.filter(c=> c!==name);
+  if(state.mvCategory === name) state.mvCategory = state.categories[state.mvType][0];
+  renderMovCategoryChips();
+  saveCategories();
+}
+function startAddCategory(){
+  const btn = $('#mv-cat-add');
+  const input = document.createElement('input');
+  input.type = 'text'; input.maxLength = 20; input.className = 'cat-edit-input'; input.placeholder = 'Nombre';
+  ['autocomplete:off','autocorrect:off','spellcheck:false','data-lpignore:true','data-1p-ignore:true'].forEach(p=>{
+    const [k,v] = p.split(':'); input.setAttribute(k,v);
+  });
+  btn.replaceWith(input);
+  input.focus();
+  let done = false;
+  const finish = (save)=>{
+    if(done) return; done = true;
+    const name = input.value.trim();
+    if(save && name){
+      const cats = catsFor(state.mvType);
+      const exists = cats.find(c=> c.toLowerCase()===name.toLowerCase());
+      if(exists){ state.mvCategory = exists; }
+      else {
+        state.categories[state.mvType] = [...cats, name];
+        state.mvCategory = name;
+        saveCategories();
+      }
+      state.catEditing = false;
+    }
+    renderMovCategoryChips();
+  };
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); finish(true); }
+    else if(e.key==='Escape'){ e.preventDefault(); finish(false); }
+  });
+  input.addEventListener('blur', ()=> finish(true));
+}
+$('#mv-cat-edit').addEventListener('click', ()=>{
+  state.catEditing = !state.catEditing;
+  renderMovCategoryChips();
+});
+
 function setMvType(type){
   state.mvType = type;
-  $$('#mv-type-tabs button').forEach(b=> b.classList.toggle('active', b.dataset.mvType===type));
   renderMovCategoryChips();
   $('#mv-fixed-toggle-label').textContent = FIXED_TOGGLE_LABELS[type] || 'Movimiento fijo';
+  syncMvMethodUI();
 }
-$$('#mv-type-tabs button').forEach(b=>{
-  b.addEventListener('click', ()=> setMvType(b.dataset.mvType));
-});
+
+/* Método de pago: Efectivo / Transferencia / Tarjeta (Débito o Crédito) */
+function syncMvMethodUI(){
+  const isCard = state.mvMethod === 'tarjeta';
+  const isCredit = isCard && state.mvCardType === 'credito';
+  $$('#mv-method button').forEach(x=> x.classList.toggle('active', x.dataset.method===state.mvMethod));
+  $$('#mv-cardtype button').forEach(x=> x.classList.toggle('active', x.dataset.cardtype===state.mvCardType));
+  $('#mv-card-box').classList.toggle('open', isCard);
+  $('#mv-debit-box').classList.toggle('open', isCredit);
+  $('#mv-debit-label').textContent = state.mvDebitDate ? ('Debitar el '+shortDate(state.mvDebitDate)) : 'Debitar el mismo día';
+  $('#mv-debit-clear').classList.toggle('hidden', !state.mvDebitDate);
+  const hasDebit = isCredit && !!state.mvDebitDate;
+  $('#mv-status-field').classList.toggle('hidden', state.mvType==='ingreso' || hasDebit);
+  $('#mv-pending-toggle').classList.toggle('active', state.mvPending);
+  $('#mv-pending-label').textContent = state.mvPending ? 'Pendiente de pago (no se descuenta aún)' : 'Pendiente de pago';
+}
 $$('#mv-method button').forEach(b=>{
   b.addEventListener('click', ()=>{
     state.mvMethod = b.dataset.method;
-    $$('#mv-method button').forEach(x=> x.classList.toggle('active', x===b));
+    syncMvMethodUI();
   });
 });
-$$('#mv-currency button').forEach(b=>{
+$$('#mv-cardtype button').forEach(b=>{
   b.addEventListener('click', ()=>{
-    state.mvCurrency = b.dataset.currency;
-    $$('#mv-currency button').forEach(x=> x.classList.toggle('active', x===b));
-    refreshAmountDisplay($('#mv-amount'), ()=> CURRENCY_PREFIX[state.mvCurrency]);
+    state.mvCardType = b.dataset.cardtype;
+    syncMvMethodUI();
   });
+});
+$('#mv-debit-btn').addEventListener('click', ()=>{
+  openDatePicker(state.mvDebitDate || $('#mv-date').value, iso=>{ state.mvDebitDate = iso; syncMvMethodUI(); });
+});
+$('#mv-debit-clear').addEventListener('click', ()=>{ state.mvDebitDate = null; syncMvMethodUI(); });
+$('#mv-pending-toggle').addEventListener('click', ()=>{ state.mvPending = !state.mvPending; syncMvMethodUI(); });
+
+/* Moneda: un solo botón. Siempre arranca en Pesos; al tocarlo alterna a Dólares. */
+function syncCurrencyPill(btnId, cur){
+  $('#'+btnId).textContent = cur==='USD' ? 'Dólares' : 'Pesos';
+}
+$('#mv-currency').addEventListener('click', ()=>{
+  state.mvCurrency = state.mvCurrency==='USD' ? 'ARS' : 'USD';
+  syncCurrencyPill('mv-currency', state.mvCurrency);
+  refreshAmountDisplay($('#mv-amount'), ()=> CURRENCY_PREFIX[state.mvCurrency]);
 });
 
+/* Repetición: 1er toque = Mensual por defecto; toque siguiente = tira de opciones */
 function syncMvFixedUI(){
   const locked = !!state.editingMovementRecurringId;
   $('#mv-fixed-toggle').classList.toggle('active', state.mvFixed);
   $('#mv-fixed-toggle').classList.toggle('locked', locked);
-  $('#mv-period-row').classList.toggle('hidden', !state.mvFixed || locked);
+  const st = $('#mv-fixed-state');
+  st.classList.toggle('hidden', !state.mvFixed);
+  st.textContent = PERIOD_LABELS[state.mvPeriod] || '';
+  $('#mv-period-box').classList.toggle('open', state.mvFixed && state.mvPeriodOpen && !locked);
   $('#mv-fixed-lock-note').classList.toggle('hidden', !locked);
   $$('#mv-period-row .chip').forEach(x=>{
     x.classList.toggle('active', x.dataset.period===state.mvPeriod);
@@ -1463,53 +1753,65 @@ function syncMvFixedUI(){
 }
 $('#mv-fixed-toggle').addEventListener('click', ()=>{
   if(state.editingMovementRecurringId) return;
-  state.mvFixed = !state.mvFixed;
+  if(!state.mvFixed){
+    state.mvFixed = true; state.mvPeriod = 'mes'; state.mvPeriodOpen = false;
+  } else {
+    state.mvPeriodOpen = !state.mvPeriodOpen;
+  }
   syncMvFixedUI();
 });
 $$('#mv-period-row .chip').forEach(b=>{
   b.addEventListener('click', ()=>{
     if(state.editingMovementRecurringId) return;
-    state.mvPeriod = b.dataset.period;
+    if(b.dataset.period === 'none'){ state.mvFixed = false; state.mvPeriod = 'mes'; }
+    else state.mvPeriod = b.dataset.period;
+    state.mvPeriodOpen = false;
     syncMvFixedUI();
   });
 });
 
 function openMovementModal(type, editId=null){
   state.editingMovementId = editId;
+  state.catEditing = false;
   $('#mv-amount').classList.remove('invalid');
   if(editId){
     const mv = state.movements.find(m=> m.id===editId);
     if(!mv) return;
-    $('#mv-modal-title').textContent = 'Editar movimiento';
-    setMvType(mv.type);
+    $('#mv-modal-title').textContent = 'Editar '+TYPE_NAMES[mv.type];
     state.mvCategory = mv.category;
-    renderMovCategoryChips();
+    state.mvMethod = mv.method || 'transferencia';
+    state.mvCardType = mv.cardType || 'debito';
+    state.mvDebitDate = mv.debitDate || null;
+    state.mvPending = mv.status==='pendiente' && !mv.debitDate;
+    setMvType(mv.type);
     state.mvCurrency = mv.currency || 'ARS';
-    $$('#mv-currency button').forEach(x=> x.classList.toggle('active', x.dataset.currency===state.mvCurrency));
+    syncCurrencyPill('mv-currency', state.mvCurrency);
     setAmountValue($('#mv-amount'), mv.amount, CURRENCY_PREFIX[state.mvCurrency]);
-    $('#mv-date').value = mv.date;
+    setDateField('mv-date','mv-date-label', mv.date);
     $('#mv-note').value = mv.note || '';
-    state.mvMethod = mv.method;
-    $$('#mv-method button').forEach(x=> x.classList.toggle('active', x.dataset.method===mv.method));
     state.mvFixed = !!mv.fixed;
     state.mvPeriod = mv.period || 'mes';
+    state.mvPeriodOpen = false;
     state.editingMovementRecurringId = mv.recurringId || null;
     syncMvFixedUI();
     $('#mv-delete-btn').classList.remove('hidden');
   } else {
-    $('#mv-modal-title').textContent = 'Nuevo movimiento';
-    setMvType(type || 'gasto');
+    const t = type || 'gasto';
+    $('#mv-modal-title').textContent = 'Nuevo '+TYPE_NAMES[t];
     state.mvCategory = null;
-    renderMovCategoryChips();
+    state.mvMethod = 'transferencia';
+    state.mvCardType = 'debito';
+    state.mvDebitDate = null;
+    state.mvPending = false;
+    setMvType(t);
     state.mvCurrency = 'ARS';
-    $$('#mv-currency button').forEach(x=> x.classList.toggle('active', x.dataset.currency==='ARS'));
+    syncCurrencyPill('mv-currency', 'ARS');
     setAmountValue($('#mv-amount'), null, CURRENCY_PREFIX.ARS);
-    $('#mv-date').value = todayISO();
+    setDateField('mv-date','mv-date-label', todayISO());
     $('#mv-note').value = '';
-    state.mvMethod = 'efectivo';
-    $$('#mv-method button').forEach(x=> x.classList.toggle('active', x.dataset.method==='efectivo'));
     state.mvFixed = false;
     state.mvPeriod = 'mes';
+    state.mvPeriodOpen = false;
     state.editingMovementRecurringId = null;
     syncMvFixedUI();
     $('#mv-delete-btn').classList.add('hidden');
@@ -1526,10 +1828,17 @@ $('#form-movement').addEventListener('submit', async (e)=>{
     showToast('Completá los campos requeridos.');
     return;
   }
+  const isCard = state.mvMethod === 'tarjeta';
+  const cardType = isCard ? state.mvCardType : null;
+  const debitDate = (isCard && cardType==='credito' && state.mvDebitDate && state.mvDebitDate > dateVal) ? state.mvDebitDate : null;
+  const status = state.mvType==='ingreso' ? 'pagado' : ((debitDate || state.mvPending) ? 'pendiente' : 'pagado');
   const payload = {
     type: state.mvType,
     amount,
     method: state.mvMethod,
+    cardType,
+    debitDate,
+    status,
     currency: state.mvCurrency,
     category: state.mvCategory,
     note: $('#mv-note').value.trim(),
@@ -1544,7 +1853,7 @@ $('#form-movement').addEventListener('submit', async (e)=>{
     const needsNewTemplate = payload.fixed && !state.editingMovementRecurringId;
     if(needsNewTemplate){
       const recRef = await addDoc(collection(db,'users',state.user.uid,'recurring'), {
-        type: payload.type, amount: payload.amount, method: payload.method,
+        type: payload.type, amount: payload.amount, method: payload.method, cardType: payload.cardType,
         currency: payload.currency, category: payload.category, note: payload.note, period: payload.period,
         nextDate: advancePeriod(payload.date, payload.period),
         active: true, createdAt: serverTimestamp()
@@ -1565,6 +1874,13 @@ $('#form-movement').addEventListener('submit', async (e)=>{
   }
 });
 
+async function markMovementPaid(id){
+  try{
+    await updateDoc(doc(db,'users',state.user.uid,'movements',id), { status:'pagado', paidDate: todayISO() });
+    showToast('Marcado como pagado.');
+  }catch(err){ console.error(err); showToast('No se pudo actualizar.'); }
+}
+
 $('#mv-delete-btn').addEventListener('click', ()=>{
   askConfirm('Vas a eliminar este movimiento de forma permanente.', async ()=>{
     try{
@@ -1583,12 +1899,10 @@ function setDebtType(type){
 $$('#debt-type-tabs button').forEach(b=>{
   b.addEventListener('click', ()=> setDebtType(b.dataset.debtType));
 });
-$$('#debt-currency button').forEach(b=>{
-  b.addEventListener('click', ()=>{
-    state.debtCurrency = b.dataset.currency;
-    $$('#debt-currency button').forEach(x=> x.classList.toggle('active', x===b));
-    refreshAmountDisplay($('#debt-amount'), ()=> CURRENCY_PREFIX[state.debtCurrency]);
-  });
+$('#debt-currency').addEventListener('click', ()=>{
+  state.debtCurrency = state.debtCurrency==='USD' ? 'ARS' : 'USD';
+  syncCurrencyPill('debt-currency', state.debtCurrency);
+  refreshAmountDisplay($('#debt-amount'), ()=> CURRENCY_PREFIX[state.debtCurrency]);
 });
 
 function openDebtModal(editId=null){
@@ -1600,11 +1914,11 @@ function openDebtModal(editId=null){
     $('#debt-modal-title').textContent = 'Editar deuda';
     setDebtType(d.type);
     state.debtCurrency = d.currency || 'ARS';
-    $$('#debt-currency button').forEach(x=> x.classList.toggle('active', x.dataset.currency===state.debtCurrency));
+    syncCurrencyPill('debt-currency', state.debtCurrency);
     setAmountValue($('#debt-amount'), d.amount, CURRENCY_PREFIX[state.debtCurrency]);
     $('#debt-person').value = d.person;
     $('#debt-desc').value = d.description || '';
-    $('#debt-date').value = d.date;
+    setDateField('debt-date','debt-date-label', d.date);
     $('#debt-status-block').classList.remove('hidden');
     $('#debt-status-badge').textContent = d.status === 'pagada' ? 'Pagada' : 'Pendiente';
     $('#debt-status-badge').className = 'badge ' + d.status;
@@ -1615,11 +1929,11 @@ function openDebtModal(editId=null){
     $('#debt-modal-title').textContent = 'Nueva deuda';
     setDebtType(state.deudasTab === 'debo' ? 'debo' : 'me_deben');
     state.debtCurrency = 'ARS';
-    $$('#debt-currency button').forEach(x=> x.classList.toggle('active', x.dataset.currency==='ARS'));
+    syncCurrencyPill('debt-currency', 'ARS');
     setAmountValue($('#debt-amount'), null, CURRENCY_PREFIX.ARS);
     $('#debt-person').value = '';
     $('#debt-desc').value = '';
-    $('#debt-date').value = todayISO();
+    setDateField('debt-date','debt-date-label', todayISO());
     $('#debt-status-block').classList.add('hidden');
     $('#debt-pay-actions').classList.add('hidden');
     $('#debt-delete-btn').classList.add('hidden');
@@ -1663,6 +1977,12 @@ async function markDebtPaid(method){
       status:'pagada', paidMethod: method, paidDate: todayISO()
     });
     closeModal('modal-debt');
+    showToast('Deuda marcada como pagada.');
+  }catch(err){ console.error(err); showToast('No se pudo actualizar.'); }
+}
+async function markDebtPaidInline(id){
+  try{
+    await updateDoc(doc(db,'users',state.user.uid,'debts',id), { status:'pagada', paidMethod:null, paidDate: todayISO() });
     showToast('Deuda marcada como pagada.');
   }catch(err){ console.error(err); showToast('No se pudo actualizar.'); }
 }
@@ -1738,6 +2058,10 @@ $$('#resumen-period-tabs button').forEach(b=>{
     renderResumen();
   });
 });
+$('#resumen-currency').addEventListener('click', ()=>{
+  state.resumenCurrency = state.resumenCurrency==='USD' ? 'ARS' : 'USD';
+  renderResumen();
+});
 $('#resumen-prev').addEventListener('click', ()=>{ shiftResumenPeriod(-1); });
 $('#resumen-next').addEventListener('click', ()=>{ shiftResumenPeriod(1); });
 function shiftResumenPeriod(dir){
@@ -1750,46 +2074,87 @@ function shiftResumenPeriod(dir){
 }
 
 /* ======================= RENDER: HOME ======================= */
-function computeGlobalBalances(){
-  let balance=0, cash=0, transfer=0, monthIncome=0, monthExpense=0;
+/* Un gasto/compra "pendiente" (o con crédito aún sin debitar) no se descuenta
+   del saldo: cuenta como "Debés" hasta que se marque como pagado. */
+function isSettled(m){
+  if(m.type === 'ingreso') return true;
+  if(m.status !== 'pendiente') return true;
+  return !!(m.debitDate && m.debitDate <= todayISO());
+}
+function computeGlobalBalances(cur){
+  let balance=0, cash=0, transfer=0, card=0, monthIncome=0, monthExpense=0, pendingOut=0;
   const now = new Date();
   const curMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   state.movements.forEach(m=>{
+    if((m.currency||'ARS') !== cur) return;
+    if(!isSettled(m)){ pendingOut += m.amount; return; }
     const sign = m.type==='ingreso' ? 1 : -1;
     balance += sign*m.amount;
     if(m.method === 'efectivo') cash += sign*m.amount;
+    else if(m.method === 'tarjeta') card += sign*m.amount;
     else transfer += sign*m.amount;
     if(m.date.slice(0,7) === curMonth){
       if(m.type==='ingreso') monthIncome += m.amount;
       else monthExpense += m.amount;
     }
   });
-  let owedToMe=0, iOwe=0;
+  let owedToMe=0, iOwe=pendingOut;
   state.debts.forEach(d=>{
-    if(d.status !== 'pendiente') return;
+    if(d.status !== 'pendiente' || (d.currency||'ARS') !== cur) return;
     if(d.type==='me_deben') owedToMe += d.amount;
     else iOwe += d.amount;
   });
-  return { balance, cash, transfer, monthIncome, monthExpense, owedToMe, iOwe };
+  return { balance, cash, transfer, card, monthIncome, monthExpense, owedToMe, iOwe };
 }
 
-function movementRowHTML(m){
+function methodLabel(m){
+  if(m.method === 'tarjeta') return 'Tarjeta' + (m.cardType==='credito' ? ' · Crédito' : ' · Débito');
+  return capitalize(m.method || '');
+}
+const PAY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;vertical-align:-1px;margin-right:4px"><path d="M20 6 9 17l-5-5"/></svg>';
+function movementRowHTML(m, animIdx=-1){
   const sign = m.type==='ingreso' ? '+' : '−';
   const cur = m.currency || 'ARS';
+  const pending = !isSettled(m);
   const fixedBadge = m.fixed
     ? `<span class="fixed-badge" title="Fijo · ${PERIOD_LABELS[m.period] || ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>`
     : '';
-  return `<div class="movement-row" data-mv-id="${m.id}">
+  const pendingBadge = pending ? '<span class="pending-badge">Pendiente</span>' : '';
+  const sub = pending && m.debitDate ? ('Se debita el '+shortDate(m.debitDate)) : (m.note ? esc(m.note) : shortDate(m.date));
+  const payBtn = pending ? `<button type="button" class="pay-btn" data-pay-mv="${m.id}">${PAY_ICON}Pagado</button>` : '';
+  const anim = animIdx >= 0 ? ` anim-item" style="--i:${animIdx}` : '';
+  return `<div class="movement-row${pending?' is-pending':''}${anim}" data-mv-id="${m.id}">
     <div class="mv-icon ${m.type}">${TYPE_ICONS[m.type]}</div>
     <div class="mv-info">
-      <p class="mv-cat">${m.category}${fixedBadge}</p>
-      <p class="mv-note">${m.note ? m.note : shortDate(m.date)}</p>
+      <p class="mv-cat">${esc(m.category)}${fixedBadge}${pendingBadge}</p>
+      <p class="mv-note">${sub}</p>
     </div>
     <div class="mv-right">
       <p class="mv-amount ${m.type==='ingreso'?'pos':'neg'}">${sign} ${money(m.amount, cur)}</p>
-      <p class="mv-method">${capitalize(m.method)}</p>
+      <p class="mv-method">${methodLabel(m)}</p>
+      ${payBtn}
     </div>
   </div>`;
+}
+
+/* Lista animada: las filas nuevas "se forman" apiladas y se despliegan,
+   con retraso escalonado (inspirado en Animated List). Solo se animan las
+   primeras 10 filas que todavía no se habían mostrado en esa pantalla. */
+function renderMovementRows(list, seen, withHeadings){
+  let html = '', lastDate = null, n = 0;
+  const newSeen = new Set();
+  list.forEach(m=>{
+    if(withHeadings && m.date !== lastDate){
+      html += `<p class="date-heading">${relativeDateLabel(m.date)}</p>`;
+      lastDate = m.date;
+    }
+    let idx = -1;
+    if(!seen.has(m.id) && n < 10){ idx = n; n++; }
+    html += movementRowHTML(m, idx);
+    newSeen.add(m.id);
+  });
+  newSeen.forEach(id=> seen.add(id));
+  return html;
 }
 
 function emptyStateHTML(iconSvg, title, sub){
@@ -1798,14 +2163,17 @@ function emptyStateHTML(iconSvg, title, sub){
 
 function renderHome(){
   updateGreeting();
-  const g = computeGlobalBalances();
-  $('#home-balance').textContent = money(g.balance);
-  $('#home-month-income').textContent = money(g.monthIncome);
-  $('#home-month-expense').textContent = money(g.monthExpense);
-  $('#home-cash').textContent = money(g.cash);
-  $('#home-transfer').textContent = money(g.transfer);
-  $('#home-owed-to-me').textContent = money(g.owedToMe);
-  $('#home-i-owe').textContent = money(g.iOwe);
+  const cur = state.homeCurrency;
+  const g = computeGlobalBalances(cur);
+  syncCurrencyPill('home-currency', cur);
+  $('#home-balance').textContent = money(g.balance, cur);
+  $('#home-month-income').textContent = money(g.monthIncome, cur);
+  $('#home-month-expense').textContent = money(g.monthExpense, cur);
+  $('#home-cash').textContent = money(g.cash, cur);
+  $('#home-transfer').textContent = money(g.transfer, cur);
+  $('#home-card').textContent = money(g.card, cur);
+  $('#home-owed-to-me').textContent = money(g.owedToMe, cur);
+  $('#home-i-owe').textContent = money(g.iOwe, cur);
 
   const recent = state.movements.slice(0,6);
   const wrap = $('#home-recent-list');
@@ -1816,14 +2184,21 @@ function renderHome(){
       'Tocá el botón + para anotar tu primer ingreso o gasto.'
     );
   } else {
-    wrap.innerHTML = recent.map(movementRowHTML).join('');
+    wrap.innerHTML = renderMovementRows(recent, state.seen.home, false);
     attachMovementRowClicks(wrap);
   }
 }
 
+$('#home-currency').addEventListener('click', ()=>{
+  state.homeCurrency = state.homeCurrency==='USD' ? 'ARS' : 'USD';
+  renderHome();
+});
 function attachMovementRowClicks(root){
   $$('.movement-row', root).forEach(row=>{
     row.addEventListener('click', ()=> openMovementModal(null, row.dataset.mvId));
+  });
+  $$('[data-pay-mv]', root).forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); markMovementPaid(btn.dataset.payMv); });
   });
 }
 
@@ -1842,15 +2217,7 @@ function renderMovimientos(){
     );
     return;
   }
-  let html = '';
-  let lastDate = null;
-  list.forEach(m=>{
-    if(m.date !== lastDate){
-      html += `<p class="date-heading">${relativeDateLabel(m.date)}</p>`;
-      lastDate = m.date;
-    }
-    html += movementRowHTML(m);
-  });
+  const html = renderMovementRows(list, state.seen.movimientos, true);
   wrap.innerHTML = html;
   attachMovementRowClicks(wrap);
 }
@@ -1879,23 +2246,32 @@ function renderDeudas(){
     );
     return;
   }
-  wrap.innerHTML = list.map(d=> `
-    <div class="debt-card" data-debt-id="${d.id}">
+  let animN = 0;
+  wrap.innerHTML = list.map(d=> {
+    let anim = '';
+    if(!state.seen.deudas.has(d.id) && animN < 10){ anim = ` anim-item" style="--i:${animN}`; animN++; }
+    return `
+    <div class="debt-card${anim}" data-debt-id="${d.id}">
       <div class="debt-card-top">
         <div class="debt-card-info">
-          <p class="debt-person">${d.person}</p>
-          ${d.description ? `<p class="debt-desc">${d.description}</p>` : ''}
+          <p class="debt-person">${esc(d.person)}</p>
+          ${d.description ? `<p class="debt-desc">${esc(d.description)}</p>` : ''}
         </div>
         <p class="debt-amount" style="color:${tab==='me_deben'?'var(--income)':'var(--expense)'}">${money(d.amount, d.currency||'ARS')}</p>
       </div>
       <div class="debt-meta">
         <span class="badge ${d.status}">${d.status==='pagada'?'Pagada':'Pendiente'}</span>
         <span class="debt-date">${shortDate(d.date)}</span>
+        ${d.status==='pendiente' ? `<button type="button" class="pay-btn" data-pay-debt="${d.id}">${PAY_ICON}${tab==='me_deben'?'Cobrada':'Pagada'}</button>` : ''}
       </div>
     </div>
-  `).join('');
+  `; }).join('');
+  list.forEach(d=> state.seen.deudas.add(d.id));
   $$('.debt-card', wrap).forEach(card=>{
     card.addEventListener('click', ()=> openDebtModal(card.dataset.debtId));
+  });
+  $$('[data-pay-debt]', wrap).forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); markDebtPaidInline(btn.dataset.payDebt); });
   });
 }
 
@@ -1932,35 +2308,40 @@ function renderResumen(){
   const { start, end, label } = getPeriodRange();
   $('#resumen-period-label').textContent = label;
 
+  const cur = state.resumenCurrency;
+  syncCurrencyPill('resumen-currency', cur);
   const inRange = state.movements.filter(m=>{
+    if((m.currency||'ARS') !== cur || !isSettled(m)) return false;
     if(!start) return true;
     return m.date >= start && m.date <= end;
   });
 
   let ingresos=0, egresos=0;
-  let cashIncome=0, cashExpense=0, transferIncome=0, transferExpense=0;
+  let cashIncome=0, cashExpense=0, transferIncome=0, transferExpense=0, cardIncome=0, cardExpense=0;
   const byCategory = {};
   inRange.forEach(m=>{
     if(m.type==='ingreso'){
       ingresos += m.amount;
-      if(m.method==='efectivo') cashIncome += m.amount; else transferIncome += m.amount;
+      if(m.method==='efectivo') cashIncome += m.amount; else if(m.method==='tarjeta') cardIncome += m.amount; else transferIncome += m.amount;
     } else {
       egresos += m.amount;
       byCategory[m.category] = (byCategory[m.category]||0) + m.amount;
-      if(m.method==='efectivo') cashExpense += m.amount; else transferExpense += m.amount;
+      if(m.method==='efectivo') cashExpense += m.amount; else if(m.method==='tarjeta') cardExpense += m.amount; else transferExpense += m.amount;
     }
   });
   const balance = ingresos - egresos;
 
-  $('#res-ingresos').textContent = money(ingresos);
-  $('#res-egresos').textContent = money(egresos);
-  $('#res-balance').textContent = money(balance);
+  $('#res-ingresos').textContent = money(ingresos, cur);
+  $('#res-egresos').textContent = money(egresos, cur);
+  $('#res-balance').textContent = money(balance, cur);
   $('#res-balance').style.color = balance >= 0 ? 'var(--income)' : 'var(--expense)';
 
-  $('#res-cash-income-amt').textContent = money(cashIncome);
-  $('#res-cash-expense-amt').textContent = money(cashExpense);
-  $('#res-transfer-income-amt').textContent = money(transferIncome);
-  $('#res-transfer-expense-amt').textContent = money(transferExpense);
+  $('#res-cash-income-amt').textContent = money(cashIncome, cur);
+  $('#res-cash-expense-amt').textContent = money(cashExpense, cur);
+  $('#res-transfer-income-amt').textContent = money(transferIncome, cur);
+  $('#res-transfer-expense-amt').textContent = money(transferExpense, cur);
+  $('#res-card-income-amt').textContent = money(cardIncome, cur);
+  $('#res-card-expense-amt').textContent = money(cardExpense, cur);
 
   const catEntries = Object.entries(byCategory).sort((a,b)=> b[1]-a[1]);
   const catWrap = $('#res-categories');
@@ -1974,7 +2355,7 @@ function renderResumen(){
     const max = catEntries[0][1];
     catWrap.innerHTML = catEntries.map(([cat,amt])=> `
       <div class="bar-row">
-        <div class="bar-row-top"><span class="name">${cat}</span><span class="amt">${money(amt)}</span></div>
+        <div class="bar-row-top"><span class="name">${esc(cat)}</span><span class="amt">${money(amt, cur)}</span></div>
         <div class="bar-track"><div class="bar-fill" style="width:${(amt/max*100)}%"></div></div>
       </div>
     `).join('');
@@ -1986,6 +2367,7 @@ function renderRecurringSettings(){
   const wrap = $('#settings-recurring-list');
   if(!wrap) return;
   const active = state.recurring.filter(r=> r.active !== false);
+  $('#acc-recurring-title').textContent = 'Gastos e ingresos fijos' + (active.length ? ' ('+active.length+')' : '');
   if(active.length === 0){
     wrap.innerHTML = '<p class="recurring-empty">No tenés gastos ni ingresos fijos activos.</p>';
     return;
@@ -1993,7 +2375,7 @@ function renderRecurringSettings(){
   wrap.innerHTML = active.map(r=> `
     <div class="recurring-row">
       <div class="recurring-row-info">
-        <p class="name">${r.category} · ${money(r.amount)}</p>
+        <p class="name">${esc(r.category)} · ${money(r.amount, r.currency||'ARS')}</p>
         <p class="meta">${PERIOD_LABELS[r.period] || ''} · próxima el ${shortDate(r.nextDate)}</p>
       </div>
       <button type="button" class="recurring-cancel-btn" data-recurring-id="${r.id}">Cancelar</button>
@@ -2021,9 +2403,19 @@ function renderAll(){
 }
 
 /* init defaults */
-$('#mv-date').value = todayISO();
-$('#debt-date').value = todayISO();
+setDateField('mv-date','mv-date-label', todayISO());
+setDateField('debt-date','debt-date-label', todayISO());
+syncMvMethodUI();
 renderMovCategoryChips();
+/* Sin autocompletado de ningún tipo en los campos de texto */
+$$('form').forEach(f=> f.setAttribute('autocomplete','off'));
+$$('input:not([type=hidden]), textarea').forEach(el=>{
+  el.setAttribute('autocomplete','off');
+  el.setAttribute('autocorrect','off');
+  el.setAttribute('spellcheck','false');
+  el.setAttribute('data-lpignore','true');
+  el.setAttribute('data-1p-ignore','true');
+});
 attachAmountMask($('#mv-amount'), ()=> CURRENCY_PREFIX[state.mvCurrency] || '$');
 attachAmountMask($('#debt-amount'), ()=> CURRENCY_PREFIX[state.debtCurrency] || '$');
 </script>
