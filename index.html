@@ -9,21 +9,37 @@
 <meta name="apple-mobile-web-app-title" content="A Note in My Wallet">
 <meta name="description" content="Tu billetera personal: gastos, ingresos, compras y deudas en un solo lugar.">
 <title>A Note in My Wallet</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236C6BF5'/%3E%3Cstop offset='1' stop-color='%234442C7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Crect x='17' y='29' width='66' height='50' rx='13' fill='%23fff'/%3E%3Crect x='17' y='29' width='66' height='18' rx='13' fill='%234442C7'/%3E%3Crect x='17' y='40' width='66' height='7' fill='%234442C7'/%3E%3Ccircle cx='67' cy='63' r='7' fill='%234442C7'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="icon-preview.png">
+<link rel="canonical" href="https://notemywallet.github.io/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="96x96" href="/icon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="A Note in My Wallet">
+<meta property="og:locale" content="es_AR">
 <meta property="og:title" content="A Note in My Wallet">
 <meta property="og:description" content="Tu billetera personal: gastos, ingresos, compras y deudas en un solo lugar.">
-<meta property="og:image" content="https://notemywallet.github.io/icon-preview.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
 <meta property="og:url" content="https://notemywallet.github.io/">
-<meta property="og:locale" content="es_AR">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://notemywallet.github.io/og.jpg">
+<meta property="og:image:secure_url" content="https://notemywallet.github.io/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A Note in My Wallet">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="A Note in My Wallet">
 <meta name="twitter:description" content="Tu billetera personal: gastos, ingresos, compras y deudas en un solo lugar.">
-<meta name="twitter:image" content="https://notemywallet.github.io/icon-preview.png">
+<meta name="twitter:image" content="https://notemywallet.github.io/og.jpg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"WebSite","name":"A Note in My Wallet","alternateName":"My Wallet","url":"https://notemywallet.github.io/","inLanguage":"es-AR"},
+ {"@type":"WebApplication","name":"A Note in My Wallet","url":"https://notemywallet.github.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"es-AR",
+  "description":"Tu billetera personal: gastos, ingresos, compras y deudas en un solo lugar.","image":"https://notemywallet.github.io/og.jpg",
+  "offers":{"@type":"Offer","price":"0","priceCurrency":"ARS"}}]}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -81,11 +97,25 @@ button:not(:disabled):active{transform:scale(.95)}
 @keyframes blurIn{from{opacity:0;filter:blur(10px);transform:translateY(-.2em)}}
 
 /* ---------- splash + login ---------- */
-.splash{position:fixed;inset:0;display:grid;place-items:center}
+/* intro: el logo se arma por líneas, se llena y una mancha del color crece detrás hasta abrir la app (como desabollito.com) */
+.splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;overflow:hidden;background:var(--bg);transition:opacity .5s}
+.splash.sale{opacity:0;pointer-events:none}
+.aurora{position:absolute;inset:0}
+.aurora i{position:absolute;width:55vmax;height:45vmax;border-radius:50%;filter:blur(70px);opacity:.3;animation:aurora 16s ease-in-out infinite alternate}
+.aurora i:nth-child(1){background:var(--accent);left:-15vmax;top:-10vmax}
+.aurora i:nth-child(2){background:color-mix(in srgb,var(--accent) 55%,#fff);right:-18vmax;top:10vh;opacity:.18;animation-duration:19s}
+.aurora i:nth-child(3){background:color-mix(in srgb,var(--accent) 50%,#000);left:10vw;bottom:-20vmax;animation-duration:14s}
+@keyframes aurora{to{transform:translate(6vmax,4vmax) scale(1.15)}}
+.ex-media{position:absolute;left:50%;top:50%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;opacity:0;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 55%,var(--bg)),color-mix(in srgb,var(--accent) 22%,var(--bg)) 50%,transparent)}
+.ex-logo{position:relative;width:min(128px,34vw);overflow:visible;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--accent) 70%,transparent))}
+.ex-logo .ln{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke .35s,opacity .35s}
+.ex-logo g .ln{stroke-width:1.7}
+.ex-logo .lg-fill{opacity:0}
+.ex-logo.lleno .ln{stroke:#fff}
+.ex-logo.lleno .ln-box{opacity:0}
 .mark{width:64px;height:64px;border-radius:19px;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#000));box-shadow:0 14px 34px -8px color-mix(in srgb,var(--accent) 70%,transparent)}
 .mark .ic{width:30px;height:30px}
-.splash .mark{animation:breathe 1.4s ease-in-out infinite}
-@keyframes breathe{50%{transform:scale(.92);opacity:.7}}
 .login{min-height:100dvh;display:grid;place-items:center;padding:24px}
 .login-card{width:100%;max-width:400px;padding:36px 28px 30px;border-radius:28px;text-align:center;box-shadow:var(--shadow-lg);animation:rise .6s var(--ease) both}
 .login-card .mark{margin:0 auto 22px}
@@ -353,7 +383,16 @@ textarea.input{resize:none;height:46px;padding:11px 12px}
 </head>
 <body>
 
-<div id="splash" class="splash"><div class="mark"><i data-ic="wallet"></i></div></div>
+<div id="splash" class="splash" role="status" aria-label="Cargando">
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="ex-media"></div>
+  <svg class="ex-logo" viewBox="0 0 512 512" aria-hidden="true">
+    <defs><linearGradient id="lg-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:color-mix(in srgb,var(--accent) 85%,#fff)"/><stop offset="1" style="stop-color:color-mix(in srgb,var(--accent) 70%,#000)"/></linearGradient></defs>
+    <rect class="lg-fill" x="16" y="16" width="480" height="480" rx="108" fill="url(#lg-grad)"/>
+    <rect class="ln ln-box" x="16" y="16" width="480" height="480" rx="108" pathLength="1"/>
+    <g transform="translate(100 100) scale(13)"><path class="ln" pathLength="1" d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path class="ln" pathLength="1" d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></g>
+  </svg>
+</div>
 
 <section id="login" class="login" hidden>
   <div class="login-card glass">
@@ -806,6 +845,34 @@ $('#sw-theme').addEventListener('click', () => {
 });
 applyTheme();
 
+/* ---------- intro ---------- */
+let authReady;
+const authOnce = new Promise(r => authReady = r);
+function intro(){
+  if(reduceMotion) return Promise.resolve();
+  const svg = $('.ex-logo'), lines = $$('.ln', svg), tFill = 150 + lines.length*260 + 550;
+  lines.forEach((p,n) => p.animate([{ strokeDashoffset:1 }, { strokeDashoffset:0 }], { duration:800, delay:150 + n*260, easing:'cubic-bezier(.65,0,.35,1)', fill:'both' }));
+  $('.lg-fill', svg).animate([{ opacity:0 }, { opacity:1 }], { duration:400, delay:tFill, fill:'both' });
+  setTimeout(() => svg.classList.add('lleno'), tFill);
+  const DUR = tFill + 1300, k = tFill/DUR, curve = 'cubic-bezier(.76,0,.24,1)';
+  const S = Math.max(innerWidth, innerHeight) / 240 * 2.4;   // de más, así el borde difuminado queda fuera de pantalla
+  const grow = $('.ex-media').animate([
+    { transform:'scale(.8)', opacity:0, offset:0 },
+    { transform:'scale(.8)', opacity:0, offset:k },
+    { transform:'scale(1)', opacity:1, offset:k + .12, easing:curve },
+    { transform:`scale(${S})`, opacity:1, offset:1 }
+  ], { duration:DUR, fill:'forwards' });
+  svg.animate([
+    { transform:'none', opacity:1, filter:'none', offset:k + .1, easing:curve },
+    { transform:'scale(2.2)', opacity:0, filter:'blur(8px)', offset:1 }
+  ], { duration:DUR, fill:'forwards' });
+  return grow.finished.catch(() => {});
+}
+Promise.all([intro(), authOnce]).then(() => {
+  $('#splash').classList.add('sale');
+  setTimeout(() => $('#splash').hidden = true, 500);
+});
+
 /* ---------- login ---------- */
 // Popup en todos lados: el redirect de Firebase en dominios *.github.io falla en Safari/iOS y Chrome nuevos (storage particionado)
 $('#btn-login').addEventListener('click', async () => {
@@ -819,7 +886,7 @@ getRedirectResult(auth).catch(err => { console.error(err); toast('No se pudo com
 $('#btn-signout').addEventListener('click', async () => { closeModal('m-settings'); await signOut(auth); });
 
 onAuthStateChanged(auth, user => {
-  $('#splash').hidden = true;
+  authReady();
   state.user = user;
   $('#login').hidden = !!user;
   $('#app').hidden = !user;
