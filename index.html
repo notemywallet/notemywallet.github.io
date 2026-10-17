@@ -92,7 +92,7 @@ button:not(:disabled):active{transform:scale(.95)}
 
 /* ---------- layout ---------- */
 .side{display:none}
-.main{--gut:clamp(14px,4.5vw,32px);min-width:0;padding:0 var(--gut) calc(var(--safe-b) + 104px)}
+.main{--gut:clamp(14px,4.5vw,32px);min-width:0;overflow-x:clip;padding:0 var(--gut) calc(var(--safe-b) + 104px)}
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;
   margin:0 calc(-1*var(--gut)) 6px;padding:calc(var(--safe-t) + 14px) var(--gut) 12px;
   background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
@@ -244,8 +244,8 @@ button:not(:disabled):active{transform:scale(.95)}
   background:color-mix(in srgb,var(--card) 97%,transparent);-webkit-backdrop-filter:blur(30px) saturate(150%);backdrop-filter:blur(30px) saturate(150%);
   transform:translateY(40px) scale(.98);opacity:.6;transition:transform .32s cubic-bezier(.2,.9,.25,1.05),opacity .25s}
 .sheet-bg.in .sheet{transform:none;opacity:1}
-.grip{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:4px auto 12px}
-.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.grip{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:2px auto 8px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
 .sheet-head h3{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .x{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--card2);color:var(--muted)}
 .x .ic{width:18px;height:18px}
@@ -253,18 +253,20 @@ button:not(:disabled):active{transform:scale(.95)}
 .quick button{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-lg);background:var(--card2);border:1px solid var(--line);font-weight:650;text-align:left}
 .sheet-bg.in .quick button{animation:listIn .4s cubic-bezier(.35,1.45,.55,1) both}
 .quick button:nth-child(2){animation-delay:40ms!important}.quick button:nth-child(3){animation-delay:80ms!important}.quick button:nth-child(4){animation-delay:120ms!important}
-.field{margin-bottom:16px}
-.field>label,.field-head>label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px}
+.field{margin-bottom:12px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.two>div{min-width:0}
+.field>label,.field-head>label,.two label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:7px}
 .field-head{display:flex;justify-content:space-between;align-items:center}
 .field-head .link{font-size:12.5px;margin-bottom:7px}
 .input{width:100%;padding:13px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);font-size:16px;outline:none;transition:border-color .2s}
 .input:focus{border-color:var(--accent)}
-textarea.input{resize:none;min-height:66px}
-.amount{text-align:center;margin-bottom:18px}
-.amount input{width:100%;border:0;background:none;outline:none;text-align:center;font-size:34px;font-weight:800;letter-spacing:-.03em;padding:4px 0}
+textarea.input{resize:none;height:46px;padding:11px 12px}
+.amount{text-align:center;margin-bottom:8px}
+.amount input{width:100%;border:0;background:none;outline:none;text-align:center;font-size:30px;font-weight:800;letter-spacing:-.03em;padding:0}
 .amount input.bad{color:var(--out);animation:shake .3s}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.amount .pill{margin-top:6px}
+.amount .pill{margin-top:2px}
 .picks{display:flex;flex-wrap:wrap;gap:8px}
 .picks button{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card2);color:var(--muted);font-size:13.5px;font-weight:600}
 .picks button.on{background:var(--accent);border-color:var(--accent);color:#fff;animation:pop .25s var(--spring)}
@@ -272,26 +274,26 @@ textarea.input{resize:none;min-height:66px}
 .picks .ic{width:13px;height:13px}
 .picks input{width:140px;padding:8px 13px;border-radius:999px;border:1px solid var(--accent);background:var(--card2);font-size:16px;outline:none}
 .opts{display:flex;gap:8px}
-.opts button{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 4px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);color:var(--muted);font-size:12.5px;font-weight:650}
-.opts.row2 button{flex-direction:row;justify-content:center;padding:10px}
+.opts button{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;padding:10px 4px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);color:var(--muted);font-size:12.5px;font-weight:650}
+.opts button .ic{width:16px;height:16px}
 .opts button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.coll{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .28s var(--ease),opacity .2s,margin .28s}
+.coll{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:0fr;opacity:0;transition:grid-template-rows .28s var(--ease),opacity .2s,margin .28s}
 .coll>div{overflow:hidden}
 .coll.open{grid-template-rows:1fr;opacity:1;margin-top:10px}
 .note{font-size:12px;color:var(--dim);margin:0 2px 8px;line-height:1.5}
-.toggle{width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);font-weight:650;font-size:14.5px;text-align:left}
+.toggle{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);font-weight:650;font-size:14.5px;text-align:left}
 .toggle>span:not(.switch){flex:1;min-width:0}
 .toggle small{display:block;font-size:12px;color:var(--dim);font-weight:500;margin-top:1px}
 .toggle .ic{color:var(--muted)}
 .toggle.on{border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
 .toggle.on .ic{color:var(--accent)}
 .toggle.locked{opacity:.7;cursor:default}
-.toggle .val{flex:none!important;font-size:12.5px;font-weight:700;color:var(--accent)}
+#mv-fixed>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .switch{position:relative;width:44px;height:26px;border-radius:99px;background:var(--line2);flex:none;transition:background .2s}
 .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgb(0 0 0/.3);transition:transform .25s var(--spring)}
 .on>.switch{background:var(--accent)}
 .on>.switch::after{transform:translateX(18px)}
-.date-btn{width:100%;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);font-weight:600;text-align:left}
+.date-btn{width:100%;display:flex;align-items:center;gap:8px;padding:11px 12px;white-space:nowrap;overflow:hidden;border-radius:var(--r);border:1px solid var(--line);background:var(--card2);font-weight:600;text-align:left}
 .date-btn .ic{color:var(--muted)}
 .btn{width:100%;padding:15px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;font-size:15.5px;margin-top:6px;box-shadow:0 10px 24px -10px color-mix(in srgb,var(--accent) 80%,transparent)}
 .btn-ghost{width:100%;padding:14px;border-radius:999px;border:1px solid var(--line);font-weight:650;margin-top:10px}
@@ -504,7 +506,7 @@ textarea.input{resize:none;min-height:66px}
         <button type="button" data-v="tarjeta"><i data-ic="card"></i>Tarjeta</button>
       </div>
       <div class="coll" id="mv-card-box"><div>
-        <div class="opts row2" id="mv-cardtype">
+        <div class="opts" id="mv-cardtype">
           <button type="button" data-v="debito">Débito</button>
           <button type="button" data-v="credito">Crédito</button>
         </div>
@@ -516,15 +518,10 @@ textarea.input{resize:none;min-height:66px}
       </div></div>
     </div>
     <div class="field">
-      <label>Fecha</label>
-      <button type="button" class="date-btn" id="mv-date-btn"><i data-ic="cal"></i><span id="mv-date-lbl"></span></button>
-    </div>
-    <div class="field" id="mv-ext-field">
-      <button type="button" class="toggle" id="mv-ext"><i data-ic="clock"></i><span>Pagado con plata externa<small>No cuenta en el saldo ni en el resumen</small></span><span class="switch"></span></button>
-    </div>
-    <div class="field">
-      <label>Repetición</label>
-      <button type="button" class="toggle" id="mv-fixed"><i data-ic="repeat"></i><span id="mv-fixed-lbl"></span><span class="val" id="mv-fixed-state"></span></button>
+      <div class="two">
+        <div><label>Fecha</label><button type="button" class="date-btn" id="mv-date-btn"><i data-ic="cal"></i><span id="mv-date-lbl"></span></button></div>
+        <div><label>Repetición</label><button type="button" class="toggle" id="mv-fixed"><i data-ic="repeat"></i><span id="mv-fixed-lbl"></span></button></div>
+      </div>
       <div class="coll" id="mv-period-box"><div>
         <div class="chips" id="mv-period">
           <button type="button" class="chip" data-v="semana">Semanal</button>
@@ -537,9 +534,11 @@ textarea.input{resize:none;min-height:66px}
       </div></div>
       <p class="note" id="mv-lock-note" style="margin-top:8px">Se genera solo desde una repetición activa. Para cancelarla, andá a Ajustes.</p>
     </div>
+    <div class="field" id="mv-ext-field">
+      <button type="button" class="toggle" id="mv-ext"><i data-ic="clock"></i><span>Pagado con plata externa<small>No cuenta en el saldo ni en el resumen</small></span><span class="switch"></span></button>
+    </div>
     <div class="field">
-      <label for="mv-note">Nota (opcional)</label>
-      <textarea class="input" id="mv-note" maxlength="120" placeholder="Detalle, lugar, motivo..."></textarea>
+      <textarea class="input" id="mv-note" maxlength="120" rows="1" placeholder="Nota (opcional)" aria-label="Nota"></textarea>
     </div>
     <button type="submit" class="btn">Guardar</button>
     <button type="button" class="btn-danger" id="mv-del">Eliminar movimiento</button>
@@ -747,7 +746,7 @@ const DEFAULT_CATEGORIES = {
   compra:['Tecnología','Hogar','Ropa','Regalo','Otros']
 };
 const TYPE_ICON = { ingreso:'in', gasto:'out', compra:'bag' };
-const FIXED_LBL = { ingreso:'Ingreso fijo', gasto:'Gasto fijo', compra:'Compra recurrente' };
+const FIXED_LBL = { ingreso:'Ingreso fijo', gasto:'Gasto fijo', compra:'Compra fija' };
 const PERIODS = { semana:'Semanal', mes:'Mensual', bimestre:'Bimestral', trimestre:'Trimestral', anual:'Anual' };
 const VIEWS = ['home','movimientos','deudas','resumen'];
 const clone = o => JSON.parse(JSON.stringify(o));
@@ -987,8 +986,7 @@ function syncMov(){
   $('#mv-cur').textContent = curName(mv.currency);
   $('#mv-fixed').classList.toggle('on', mv.fixed);
   $('#mv-fixed').classList.toggle('locked', locked);
-  $('#mv-fixed-lbl').textContent = FIXED_LBL[mv.type];
-  $('#mv-fixed-state').textContent = mv.fixed ? PERIODS[mv.period] : 'No';
+  $('#mv-fixed-lbl').textContent = mv.fixed ? PERIODS[mv.period] : 'No se repite';
   $('#mv-period-box').classList.toggle('open', mv.fixed && mv.periodOpen && !locked);
   $('#mv-lock-note').hidden = !locked;
   $$('#mv-period [data-v]').forEach(b => b.classList.toggle('on', mv.fixed ? b.dataset.v === mv.period : b.dataset.v === 'none'));
@@ -1030,7 +1028,7 @@ function openMov(type, id=null){
     id:null, type, category:null, method:'transferencia', cardType:'debito', debitDate:null, external:false,
     currency:'ARS', date:todayISO(), fixed:false, period:'mes', recId:null
   }, { periodOpen:false, catEditing:false });
-  $('#mv-title').textContent = (m ? 'Editar ' : 'Nuevo ') + mv.type;
+  $('#mv-title').textContent = (m ? 'Editar ' : mv.type === 'compra' ? 'Nueva ' : 'Nuevo ') + mv.type;
   setAmount($('#mv-amount'), m?.amount, mv.currency);
   $('#mv-note').value = m?.note || '';
   $('#mv-del').hidden = !m;
@@ -1209,13 +1207,13 @@ function balances(cur){
 /* ---------- render ---------- */
 const empty = (icon, title, sub) => `<div class="empty">${ic(icon)}<b>${title}</b><span>${sub}</span></div>`;
 const methodLabel = m => m.method === 'tarjeta' ? 'Tarjeta · '+(m.cardType === 'credito' ? 'Crédito' : 'Débito') : cap(m.method || '');
-function rowHTML(m, i){
+function rowHTML(m, i, home=false){
   const cur = m.currency || 'ARS', ext = m.status === 'externo', pending = !ext && !isSettled(m);
   const sub = pending && m.debitDate ? 'Se debita el '+shortDate(m.debitDate) : m.note ? esc(m.note) : shortDate(m.date);
   return `<div class="row${pending || ext ? ' muted' : ''}${i >= 0 ? ' anim' : ''}" style="--i:${i}" data-mv="${m.id}">
     <div class="badge-ic t-${m.type}">${ic(TYPE_ICON[m.type])}</div>
     <div class="row-info">
-      <p class="row-title"><span>${esc(m.category)}</span>${m.fixed ? `<span title="${PERIODS[m.period] || 'Fijo'}">${ic('repeat')}</span>` : ''}${pending ? '<span class="tag">Pendiente</span>' : ext ? '<span class="tag">Externo</span>' : ''}</p>
+      <p class="row-title"><span>${esc(m.category)}</span>${m.fixed ? `<span title="${PERIODS[m.period] || 'Fijo'}">${ic('repeat')}</span>` : ''}${pending ? '<span class="tag">Pendiente</span>' : ext && !home ? '<span class="tag">Externo</span>' : ''}</p>
       <p class="row-sub">${sub}</p>
     </div>
     <div class="row-right">
@@ -1230,7 +1228,7 @@ function rowsHTML(list, seen, headings){
   let html = '', last = null, n = 0;
   for(const m of list){
     if(headings && m.date !== last){ html += `<p class="date-h">${relativeDateLabel(m.date)}</p>`; last = m.date; }
-    html += rowHTML(m, seen.has(m.id) || n >= 12 ? -1 : n++);
+    html += rowHTML(m, seen.has(m.id) || n >= 12 ? -1 : n++, !headings);
     seen.add(m.id);
   }
   return `<div class="card list">${html}</div>`;
