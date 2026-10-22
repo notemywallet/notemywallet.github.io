@@ -58,6 +58,7 @@
   --b1:22%;--b2:12%;
   --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.4,.64,1);
   --r:14px;--r-lg:20px;--r-xl:26px;
+  --piix-z:25;   /* bichitos debajo del dock, las hojas y la intro */
   --safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px);
   --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   color-scheme:dark;
@@ -653,6 +654,11 @@ textarea.input{resize:none;height:46px;padding:11px 12px}
 
 <div class="toasts" id="toasts"></div>
 
+<!-- bichitos de píxel (piixpal): versión fija + integridad, así un cambio en el paquete no entra sin revisar -->
+<piix-pal pal="bitbug" on="#greet"></piix-pal>
+<piix-pal pal="boing" on=".hero"></piix-pal>
+<script src="https://cdn.jsdelivr.net/npm/piixpal@0.4.0/piixpal.min.js" integrity="sha384-ceY8Rlte2Kcw7J1blYDZVFNx2WXKUflnqEpTlZeLMvWkj+MjXd8+rbMk3PCRYhl6" crossorigin="anonymous" defer></script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
@@ -802,7 +808,7 @@ const state = {
   resPeriod:'mensual', resRef:new Date(), resCur:'ARS',
   mv:{}, debt:{}
 };
-let unsubs = [], recurringChecked = false, processing = false;
+let unsubs = [], recurringChecked = false, processing = false, loginPal = null;
 
 /* ---------- tema ---------- */
 const THEME_KEY = 'a-note-in-my-wallet-theme';
@@ -893,6 +899,9 @@ onAuthStateChanged(auth, user => {
   unsubs.forEach(f => f()); unsubs = [];
   Object.assign(state, { movements:[], debts:[], recurring:[], categories:clone(DEFAULT_CATEGORIES), seen:freshSeen() });
   recurringChecked = false;
+  // el de login solo existe mientras se ve el login (oculto, piixpal lo dibuja en la esquina)
+  if(!user) loginPal ||= window.Piixpal?.add('pip', '#btn-login');
+  else { loginPal?.remove(); loginPal = null; }
   if(!user){ $$('.sheet-bg.in').forEach(m => closeModal(m.id)); return; }
   const av = $('#btn-settings');
   av.textContent = (user.displayName || user.email || '?').charAt(0).toUpperCase();
